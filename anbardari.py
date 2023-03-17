@@ -1,6 +1,8 @@
 import sqlite3 as sql
 from tkinter import * 
 from tkinter import ttk
+from tkinter import filedialog
+from PIL import Image, ImageTk
 class main(Tk):
     def __init__(self) :
         Tk.__init__(self)
@@ -9,6 +11,7 @@ class main(Tk):
         # self.login()
         # self.main()
         self.Product_registration()
+#----------------------------------------------------------------------------------------------------------
 
 
     # def main(self) :
@@ -38,7 +41,7 @@ class main(Tk):
     #     self.btn8.place(x = 961 , y = 558)
 
 
-
+#----------------------------------------------------------------------------------------------------------
 
     # def register(self) :
     #     self.geometry('900x500+150+150')
@@ -106,6 +109,26 @@ class main(Tk):
     #     self.eye.bind('<Button-1>',self.hide)
     #     self.eye.bind('<ButtonRelease>',self.hide)
 
+    # def check(self) :
+    #     conn = sql.connect('mydb.db')
+    #     cursor = conn.cursor()
+    #     cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    #     tables = cursor.fetchall()
+    #     if len(tables) == 0:
+    #         pass
+    #     else:
+    #         pass
+    #     cursor.close()
+    #     conn.close()
+
+    # def hide(self,event = None):
+    #     if self.passw_ent['show'] == '*' :
+    #         self.passw_ent['show'] = ""
+    #         self.baste_image['file'] = 'D:/123/!python/Projects/anbardari/img/baz.png'
+    #     elif self.passw_ent['show'] == "" :
+    #         self.passw_ent['show'] = '*'
+    #         self.baste_image['file'] = 'D:/123/!python/Projects/anbardari/img/baste.png'
+#----------------------------------------------------------------------------------------------------------
 
     def Product_registration(self) :
         self.geometry('1400x850+300+50')
@@ -142,7 +165,7 @@ class main(Tk):
         self.product_group.place(x = 607 , y = 245)
 
         self.product_type_combo = ttk.Combobox(self,width = 20 , font = ('B Koodak' , 12),justify = 'right',values=["مواد خام", "کالای خریداری شده", "کالای توید شده اولیه", "کالای تولید شده برای فروش"])
-        self.product_group_combo = ttk.Combobox(self,width = 20 , font = ('B Koodak' , 12),justify = 'right',values=["مواد خام", "کالای خریداری شده", "کالای توید شده اولیه", "کالای تولید شده برای فروش"])
+        self.product_group_combo = ttk.Combobox(self,width = 20 , font = ('B Koodak' , 12),justify = 'right',values=["فلزات", "مواد غذایی"])
         self.product_type_combo.set("یک گزینه را انتخاب کنید")
         self.product_group_combo.set("یک گزینه را انتخاب کنید")
         self.product_type_combo.place(x=378, y=148)
@@ -153,31 +176,51 @@ class main(Tk):
         self.Product_registration_submit.place(x=460, y=775)
         self.Product_registration_exit.place(x=710, y=775)    
 
+        self.photo_submit.bind('<Button-1>',self.change_image)
+        self.Product_registration_submit.bind('<Button-1>',self.Product_registration_info)
+    def change_image(self,event = None) :
+        self.filename = filedialog.askopenfilename()
+        self.pr_image = Image.open(self.filename)
+        self.pr_image.thumbnail((220, 176))  
+        self.photo = ImageTk.PhotoImage(self.pr_image)
+        self.pr_image = Label(self,image = self.photo ,relief="flat")
+        self.pr_image.place(x=130, y=109)  
+    def Product_registration_info(self,event = None) :
+        self.code = self.product_code_ent.get()
+        self.name = self.product_name_ent.get()
+        self.point = self.point_purchase_ent.get()
+        self.desc = self.Description_ent.get()
+        self.type = self.product_type_combo.get()
+        self.group = self.product_group_combo.get()
+        self.photo = self.covert_to_binary_data(self.filename)
+
+        self.con=sql.connect('mydb.db')
+        self.cur=self.con.cursor()
+        self.data=(self.code,self.name,self.point,self.desc,self.type,self.group,self.photo)
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS kala (id   ,name TEXT ,point INTEGER,Description TEXT
+        ,type TEXT,groupp TEXT,photoo BLOB)''')
+        self.cur.execute('INSERT INTO kala(id,name,point,Description,type,groupp,photoo) VALUES(?,?,?,?,?,?,?)',self.data)
+        self.con.commit()
+
+        self.product_type_combo.set("یک گزینه را انتخاب کنید")
+        self.product_group_combo.set("یک گزینه را انتخاب کنید")
+        self.product_code_ent.delete(0,END)
+        self.product_name_ent.delete(0,END)
+        self.point_purchase_ent.delete(0,END)
+        self.Description_ent.delete(0,END)
+
+    def covert_to_binary_data(self,filename):
+        with open (filename , 'rb') as f:
+            blobdata = f.read()
+        return blobdata
+        
+        
 
 
 
-    # def hide(self,event = None):
-    #     if self.passw_ent['show'] == '*' :
-    #         self.passw_ent['show'] = ""
-    #         self.baste_image['file'] = 'D:/123/!python/Projects/anbardari/img/baz.png'
-    #     elif self.passw_ent['show'] == "" :
-    #         self.passw_ent['show'] = '*'
-    #         self.baste_image['file'] = 'D:/123/!python/Projects/anbardari/img/baste.png'
 
 
 
-
-    def check(self) :
-        conn = sql.connect('mydb.db')
-        cursor = conn.cursor()
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
-        tables = cursor.fetchall()
-        if len(tables) == 0:
-            pass
-        else:
-            pass
-        cursor.close()
-        conn.close()
 
 o = main()
 o.mainloop()
