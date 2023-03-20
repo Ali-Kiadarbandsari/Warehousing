@@ -5,27 +5,50 @@ from tkinter import filedialog
 from PIL import Image, ImageTk
 import io
     
-class signup(Tk) :
-    def __init__(self) :
-        Tk.__init__(self)
-        self.check()
 
+
+main = Tk()
+registration = Toplevel()
+loginn = Toplevel()
+Product = Toplevel()
+User = Toplevel()
+class home:
+    def __init__(self,event = None) :
+        self.main_page()
+        self.register()
+        self.login()
+        self.Product_registration()
+        self.User_registration()
+
+        self.check()
+        
+        self.kalalst = []
+        self.kalaid = ""
+        self.valuelst = []
+        self.count = 0
+
+        self.data_to_treeview()
+        self.user_data_to_table()
+#====================================================================================================================================================
+#====================================================================================================================================================
+#====================================================================================================================================================
     def register(self) :
-        self.geometry('900x500+450+150')
-        self.title('register')
+        registration.state("withdraw")
+        registration.geometry('900x500+450+150')
+        registration.title('register')
         self.register_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/register_back.png')
-        self.register_img = Label(self,image = self.register_image )
+        self.register_img = Label(registration,image = self.register_image )
         self.register_img.place(x = 0 , y = 0)
 
-        self.name = Label(self,text = ": نام",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
-        self.last = Label(self,text = ": نام خانوادگی",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
-        self.user = Label(self,text = ": نام کابری",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
-        self.passw = Label(self,text = ": کلمه کاربری",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
+        self.name = Label(registration,text = ": نام",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
+        self.last = Label(registration,text = ": نام خانوادگی",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
+        self.user = Label(registration,text = ": نام کابری",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
+        self.passw = Label(registration,text = ": کلمه کاربری",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
 
-        self.name_ent = Entry(self, bg = '#adb5bd', width = 25 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#FFFFFF')
-        self.last_ent = Entry(self, bg = '#adb5bd', width = 25 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#FFFFFF')
-        self.user_ent = Entry(self, bg = '#adb5bd', width = 25 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#FFFFFF')
-        self.passw_ent = Entry(self, bg = '#adb5bd', width = 25 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#FFFFFF')
+        self.name_ent = Entry(registration, bg = '#adb5bd', width = 25 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#FFFFFF')
+        self.last_ent = Entry(registration, bg = '#adb5bd', width = 25 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#FFFFFF')
+        self.user_ent = Entry(registration, bg = '#adb5bd', width = 25 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#FFFFFF')
+        self.passw_ent = Entry(registration, bg = '#adb5bd', width = 25 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#FFFFFF')
 
         self.name.place(x =750 , y = 90 )
         self.last.place(x =750 , y = 155 )
@@ -37,8 +60,8 @@ class signup(Tk) :
         self.user_ent.place(x =500 , y = 230 )
         self.passw_ent.place(x =500, y = 293 )
 
-        self.submit_btn = Button(self,bg = "#495057" , text = "ثبت",font = ('B Koodak' , 14),width=10 ,relief="flat" , fg = "#FFFFFF")
-        self.exit_btn = Button(self,bg = "#495057" , text = "خروج",font = ('B Koodak' , 14),width=10 ,relief="flat" , fg = "#FFFFFF")
+        self.submit_btn = Button(registration,bg = "#495057" , text = "ثبت",font = ('B Koodak' , 14),width=10 ,relief="flat" , fg = "#FFFFFF")
+        self.exit_btn = Button(registration,bg = "#495057" , text = "خروج",font = ('B Koodak' , 14),width=10 ,relief="flat" , fg = "#FFFFFF")
 
         self.submit_btn.place(x = 544 ,y = 382)
         self.exit_btn.place(x = 704 , y = 382)
@@ -48,29 +71,30 @@ class signup(Tk) :
 
 
     def login(self):
-        self.geometry('450x550+550+150')
-        self.title('login')
+        loginn.state("withdraw")
+        loginn.geometry('450x550+550+150')
+        loginn.title('login')
 
         self.login_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/login_back.png')
-        self.login_img = Label(self,image = self.login_image ,relief="flat")
+        self.login_img = Label(loginn,image = self.login_image ,relief="flat")
         self.login_img.place(x = 0 , y = 0)
 
-        self.user = Label(self,text = ": نام کاربری",font = ('B Koodak' , 18),bg = '#495057',fg = '#F8F9FA')
-        self.passw = Label(self,text = ": رمز عبور",font = ('B Koodak' , 18),bg = '#495057',fg = '#F8F9FA')
+        self.user = Label(loginn,text = ": نام کاربری",font = ('B Koodak' , 18),bg = '#495057',fg = '#F8F9FA')
+        self.passw = Label(loginn,text = ": رمز عبور",font = ('B Koodak' , 18),bg = '#495057',fg = '#F8F9FA')
         self.user.place(x = 310 , y = 141)
         self.passw.place(x = 310 , y = 209)
         
-        self.user_entt = Entry(self, bg = '#ced4da', width = 23 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
-        self.passw_entt = Entry(self, bg = '#ced4da', width = 23 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057',show = "")
+        self.user_entt = Entry(loginn, bg = '#ced4da', width = 23 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.passw_entt = Entry(loginn, bg = '#ced4da', width = 23 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057',show = "")
         self.user_entt.place(x = 80 , y = 151)
         self.passw_entt.place(x = 80 , y = 219)
 
         # self.baz_image = PhotoImage(file = 'img/login_back.png')
         self.baste_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/baste.png')
-        self.eye = Button(self,image = self.baste_image ,relief="flat" , bg = "#495057",activebackground = '#495057')
+        self.eye = Button(loginn,image = self.baste_image ,relief="flat" , bg = "#495057",activebackground = '#495057')
         self.eye.place(x = 35 , y = 219)
 
-        self.submit_btn = Button(self,bg = "#6C757D" , text = "ثبت",font = ('B Koodak' , 14),width=13 ,relief="flat" , fg = "#FFFFFF")
+        self.submit_btn = Button(loginn,bg = "#6C757D" , text = "ثبت",font = ('B Koodak' , 14),width=13 ,relief="flat" , fg = "#FFFFFF")
         self.submit_btn.place(x = 148 , y = 336)
 
         self.eye.bind('<Button-1>',self.hide)
@@ -84,9 +108,10 @@ class signup(Tk) :
         self.cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
         self.tables = self.cur.fetchall()
         if len(self.tables) == 0:
-            self.register()
+            registration.state("normal")
         else:
-            self.login()
+            loginn.state("normal")
+            print("asd")
         self.cur.close()
         self.con.close()
     def register_check(self,event = None): 
@@ -102,11 +127,8 @@ class signup(Tk) :
         self.cur.execute('INSERT INTO login(name,last,username,password) VALUES(?,?,?,?)',self.data)
         self.con.commit()
 
-        self.state('withdrawn')
-        self.mainnn()
-    def mainnn(self) :
-        mm = home()
-        mm.mainloop()
+        registration.state('withdrawn')
+        main.state('normal')
     def login_check(self,event = None) :
         con = sql.connect('mydb.db')
         cur = con.cursor()
@@ -119,9 +141,8 @@ class signup(Tk) :
         lst = sql_show()
         print(lst[0][3])
         if self.user_entt.get() == lst[0][2] and self.passw_entt.get() == lst[0][3] :
-            print("asd")
-            # m = main()
-            # m.mainloop()
+            loginn.state('withdrawn')
+            main.state('normal')
     def hide(self,event = None):
         if self.passw_ent['show'] == '*' :
             self.passw_ent['show'] = ""
@@ -130,32 +151,28 @@ class signup(Tk) :
             self.passw_ent['show'] = '*'
             self.baste_image['file'] = 'D:/123/!python/Projects/anbardari/img/baste.png'
 
+        
+#====================================================================================================================================================
+#====================================================================================================================================================
+#====================================================================================================================================================
 
-class home(Tk):
-
-    def __init__(self) :
-        Tk.__init__(self)
-        self.main()
-        # self.Product_registration()
-# ----------------------------------------------------------------------------------------------------------
-
-
-    def main(self) :
-        self.geometry('1200x680+550+150')
-        self.title('main')
+    def main_page(self) :
+        main.state("withdraw")
+        main.geometry('1200x680+550+150')
+        main.title('main')
 
         self.main_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/main_back.png')
-        self.main_img = Label(self,image = self.main_image ,relief="flat")
+        self.main_img = Label(main,image = self.main_image ,relief="flat")
         self.main_img.place(x = 0 , y = 0)
 
-        self.btn1 = Button(self,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
-        self.btn2 = Button(self,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
-        self.btn3 = Button(self,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
-        self.btn4 = Button(self,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
-        self.btn5 = Button(self,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
-        self.btn6 = Button(self,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
-        self.btn7 = Button(self,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
-        self.btn8 = Button(self,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
+        self.btn1 = Button(main,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
+        self.btn2 = Button(main,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
+        self.btn3 = Button(main,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
+        self.btn4 = Button(main,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
+        self.btn5 = Button(main,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
+        self.btn6 = Button(main,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
+        self.btn7 = Button(main,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
+        self.btn8 = Button(main,text = "ورود به صفحه" ,relief="flat" ,font = ('B Koodak' , 12),width = 15,fg = "#DEE2E6", bg = "#495057",activebackground = '#495057')
         
         self.btn1.place(x = 87 , y = 248)
         self.btn2.place(x = 381 , y = 248)
@@ -166,73 +183,75 @@ class home(Tk):
         self.btn7.place(x = 671 , y = 558)
         self.btn8.place(x = 961 , y = 558)
         self.btn1.bind('<Button-1>',self.main_to_Pregistration)
+        self.btn2.bind('<Button-1>',self.main_to_Uregistration)
 
     def main_to_Pregistration(self,event = None) :
-        p = Pregistration()
-        p.mainloop()
-
-
-class Pregistration(Tk) :
-    def __init__(self) :
-        Tk.__init__(self)
-        self.Product_registration()
-        self.data_to_treeview()
-        # self.style = ttk.Style()
-        self.kalalst = []
-        self.kalaid = ""
-        self.valuelst = []
+        main.state("withdraw")
+        Product.state("normal")
+    def main_to_Uregistration(self,event = None) :
+        main.state("withdraw")
+        User.state("normal")
+    def to_home(self,event = None):
+        if Product.state() == "normal" :
+            Product.state("withdrawn")
+            main.state("normal")
+        elif User.state() == "normal" :
+            User.state("withdrawn")
+            main.state("normal")
+#====================================================================================================================================================
+#====================================================================================================================================================
+#====================================================================================================================================================
     def Product_registration(self) :
-        self.geometry('1400x900+300+50')
-        self.title('Product registration')
+        Product.state("withdraw")
+        Product.geometry('1400x900+300+50')
+        Product.title('Product registration')
 
         self.Product_registration_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/Product-registration_back.png')
-        self.Product_registration_img = Label(self,image = self.Product_registration_image ,relief="flat")
+        self.Product_registration_img = Label(Product,image = self.Product_registration_image ,relief="flat")
         self.Product_registration_img.place(x = 0 , y = 0)
 
-        self.search_btn = Button(self,bg = "#DEE2E6" , text = "جستجو",font = ('B Koodak' , 13),width=12 ,relief="flat" , fg = "#000000")
-        self.search_ent = Entry(self, bg = '#FFFFFF', width = 35 , font = ('B Koodak' , 14) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.search_btn = Button(Product,bg = "#DEE2E6" , text = "جستجو",font = ('B Koodak' , 13),width=12 ,relief="flat" , fg = "#000000")
+        self.search_ent = Entry(Product, bg = '#FFFFFF', width = 35 , font = ('B Koodak' , 14) , relief = 'flat' , justify = 'right',fg='#495057')
         self.search_btn.place(x = 85 , y = 33)
-        # self.search_btn.place(x = 0 , y = 0)
         self.search_ent.place(x = 266 , y = 40)
-        # self.search_ent.place(x = 0 , y = 0)
         
-        self.product_name = Label(self,text = ": نام کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
-        self.product_code = Label(self,text = ": کد کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
-        self.point_purchase = Label(self,text = ": نقطه خرید",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
-        self.Description = Label(self,text = ": توضیحات کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
+        self.product_name = Label(Product,text = ": نام کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
+        self.product_code = Label(Product,text = ": کد کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
+        self.point_purchase = Label(Product,text = ": نقطه خرید",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
+        self.Description = Label(Product,text = ": توضیحات کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
         self.product_name.place(x = 1169 , y = 181)
         self.product_code.place(x = 1169 , y = 233)
         self.point_purchase.place(x = 1169 , y = 285)
         self.Description.place(x = 1169 , y = 337)
 
-        self.product_name_ent = Entry(self, bg = '#FFFFFF', width = 35 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
-        self.product_code_ent = Entry(self, bg = '#FFFFFF', width = 35 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
-        self.point_purchase_ent = Entry(self, bg = '#FFFFFF', width = 35 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
-        self.Description_ent = Entry(self, bg = '#FFFFFF', width = 35 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.product_name_ent = Entry(Product, bg = '#FFFFFF', width = 35 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.product_code_ent = Entry(Product, bg = '#FFFFFF', width = 35 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.point_purchase_ent = Entry(Product, bg = '#FFFFFF', width = 35 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.Description_ent = Entry(Product, bg = '#FFFFFF', width = 35 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
         self.product_name_ent.place(x = 824 , y = 185)
         self.product_code_ent.place(x = 824 , y = 237)
         self.point_purchase_ent.place(x = 824 , y = 289)
         self.Description_ent.place(x = 824 , y = 341)
 
-        self.photo_submit = Button(self,bg = "#6C757D" , text = "بارگذاری عکس",font = ('B Koodak' , 12),width=13 ,relief="flat" , fg = "#FFFFFF")
+        self.photo_submit = Button(Product,bg = "#6C757D" , text = "بارگذاری عکس",font = ('B Koodak' , 12),width=13 ,relief="flat" , fg = "#FFFFFF")
         self.photo_submit.place(x = 168 , y = 342)
 
-        self.product_type = Label(self,text = ": نوع کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
-        self.product_group = Label(self,text = ": نام گروه کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
+        self.product_type = Label(Product,text = ": نوع کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
+        self.product_group = Label(Product,text = ": نام گروه کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
         self.product_type.place(x = 607 , y = 189)
         self.product_group.place(x = 607 , y = 289)
 
-        self.product_type_combo = ttk.Combobox(self,width = 20 , font = ('B Koodak' , 12),justify = 'right',values=["مواد خام", "کالای خریداری شده", "کالای توید شده اولیه", "کالای تولید شده برای فروش"])
-        self.product_group_combo = ttk.Combobox(self,width = 20 , font = ('B Koodak' , 12),justify = 'right',values=["فلزات", "مواد غذایی"])
+        self.product_type_combo = ttk.Combobox(Product,width = 20 , font = ('B Koodak' , 12),justify = 'right',values=["مواد خام", "کالای خریداری شده", "کالای توید شده اولیه", "کالای تولید شده برای فروش"])
+        self.product_group_combo = ttk.Combobox(Product,width = 20 , font = ('B Koodak' , 12),justify = 'right',values=["فلزات", "مواد غذایی"])
         self.product_type_combo.set("یک گزینه را انتخاب کنید")
         self.product_group_combo.set("یک گزینه را انتخاب کنید")
         self.product_type_combo.place(x=378, y=195)
         self.product_group_combo.place(x=378, y=295)
 
-        self.Product_registration_submit = Button(self,bg = "#495057" , text = "ثبت",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
-        self.Product_registration_edit = Button(self,bg = "#495057" , text = "ویرایش",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
-        self.Product_registration_delete = Button(self,bg = "#495057" , text = "حذف",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
-        self.Product_registration_exit = Button(self,bg = "#495057" , text = "صفحه اصلی",font = ('B Koodak' , 14),width=17 ,relief="flat" , fg = "#FFFFFF") 
+        self.Product_registration_submit = Button(Product,bg = "#495057" , text = "ثبت",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
+        self.Product_registration_edit = Button(Product,bg = "#495057" , text = "ویرایش",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
+        self.Product_registration_delete = Button(Product,bg = "#495057" , text = "حذف",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
+        self.Product_registration_exit = Button(Product,bg = "#495057" , text = "صفحه اصلی",font = ('B Koodak' , 14),width=17 ,relief="flat" , fg = "#FFFFFF") 
         self.Product_registration_submit.place(x=50, y=815)
         self.Product_registration_edit.place(x=250, y=815)    
         self.Product_registration_delete.place(x=450, y=815)    
@@ -243,10 +262,10 @@ class Pregistration(Tk) :
         self.new_width = 220
         self.new_height = 175
         self.photo = ImageTk.PhotoImage(self.procuct_image)
-        self.label = Label(self, image=self.photo, width=self.new_width, height=self.new_height)
+        self.label = Label(Product, image=self.photo, width=self.new_width, height=self.new_height)
         self.label.place(x=125, y=153)  
         
-        self.kala = ttk.Treeview(self,show='headings',height=7)
+        self.kala = ttk.Treeview(Product,show='headings',height=7)
         self.kala['columns']=('group','Type','point','id','Name','row')
         self.kala.column('#0',width=0,stretch=NO)
         self.kala.column('group',width=220,anchor=E)
@@ -278,7 +297,7 @@ class Pregistration(Tk) :
         self.Product_registration_edit.bind('<Button-1>',self.edit)
         self.Product_registration_delete.bind('<Button-1>',self.delete)
         self.search_btn.bind('<Button-1>',self.search)
-
+        self.Product_registration_exit.bind('<Button-1>',self.to_home)
     #edit part------------------------------------------------------------
     def show_info(self,event = None) :
         self.product_type_combo.set("یک گزینه را انتخاب کنید")
@@ -407,7 +426,7 @@ class Pregistration(Tk) :
         self.new_width = 220
         self.new_height = 175
         self.photo = ImageTk.PhotoImage(self.procuct_image)
-        self.label = Label(self, image=self.photo, width=self.new_width, height=self.new_height)
+        self.label = Label(Product, image=self.photo, width=self.new_width, height=self.new_height)
         self.label.place(x=125, y=153)   
         
     # def binary_to_img(self,filename):
@@ -418,36 +437,34 @@ class Pregistration(Tk) :
     #             img = Image.open(io.BytesIO(img_data))
     #         except IOError:
     #             print("Unsupported image format")
-#=========================================================================
-class Uregistration(Tk) :
-    def __init__(self) :
-        Tk.__init__(self)
-        self.User_registration()
-        self.user_data_to_table()
+#====================================================================================================================================================
+#====================================================================================================================================================
+#====================================================================================================================================================
     def User_registration(self) :
-        self.geometry('1400x900+300+50')
-        self.title('Product registration')
+        User.state("withdraw")
+        User.geometry('1400x900+300+50')
+        User.title('Product registration')
 
         self.User_registration_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/User-registration_back.png')
-        self.User_registration_img = Label(self,image = self.User_registration_image ,relief="flat")
+        self.User_registration_img = Label(User,image = self.User_registration_image ,relief="flat")
         self.User_registration_img.place(x = 0 , y = 0)
 
-        self.UserName = Label(self,text = ": نام",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
-        self.UserLast = Label(self,text = ": نام خانوادگی",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
-        self.UserCode = Label(self,text = ": کد ملی",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
-        self.UserGender = Label(self,text = ": جنسیت",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
-        self.UserWorkPosition = Label(self,text = ": سِمَت شغلی",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
+        self.UserName = Label(User,text = ": نام",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
+        self.UserLast = Label(User,text = ": نام خانوادگی",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
+        self.UserCode = Label(User,text = ": کد ملی",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
+        self.UserGender = Label(User,text = ": جنسیت",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
+        self.UserWorkPosition = Label(User,text = ": سِمَت شغلی",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#495057')
         self.UserName.place(x = 1177 , y = 170)
         self.UserLast.place(x = 1177 , y = 244)
         self.UserCode.place(x = 1177 , y = 318)
         self.UserGender.place(x = 824 , y = 170)
         self.UserWorkPosition.place(x = 824 , y = 245)
 
-        self.UserName_ent = Entry(self, bg = '#FFFFFF', width = 23 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
-        self.UserLast_ent = Entry(self, bg = '#FFFFFF', width = 23 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
-        self.UserCode_ent = Entry(self, bg = '#FFFFFF', width = 23 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
-        self.UserGender_combo = ttk.Combobox(self,width = 22 , font = ('B Koodak' , 12),justify = 'right',values=["مرد", "زن"])
-        self.UserWorkPosition_combo = ttk.Combobox(self,width = 22 , font = ('B Koodak' , 12),justify = 'right',values=["فروشنده", "خریدار","کارمند","رئیس کارگاه"])
+        self.UserName_ent = Entry(User, bg = '#FFFFFF', width = 23 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.UserLast_ent = Entry(User, bg = '#FFFFFF', width = 23 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.UserCode_ent = Entry(User, bg = '#FFFFFF', width = 23 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.UserGender_combo = ttk.Combobox(User,width = 22 , font = ('B Koodak' , 12),justify = 'right',values=["مرد", "زن"])
+        self.UserWorkPosition_combo = ttk.Combobox(User,width = 22 , font = ('B Koodak' , 12),justify = 'right',values=["فروشنده", "خریدار","کارمند","رئیس کارگاه"])
         self.UserName_ent.place(x = 945 , y = 175)
         self.UserLast_ent.place(x = 945 , y = 249)
         self.UserCode_ent.place(x = 945 , y = 323)
@@ -456,25 +473,24 @@ class Uregistration(Tk) :
         self.UserGender_combo.set("یک گزینه را انتخاب کنید")
         self.UserWorkPosition_combo.set("یک گزینه را انتخاب کنید")
 
-        self.image_btn = Button(self,bg = "#6C757D" , text = "بارگذاری عکس",font = ('B Koodak' , 12),width=13 ,relief="flat" , fg = "#FFFFFF")
+        self.image_btn = Button(User,bg = "#6C757D" , text = "بارگذاری عکس",font = ('B Koodak' , 12),width=13 ,relief="flat" , fg = "#FFFFFF")
         self.image_btn.place(x = 237 , y = 341)
 
-        self.search_btn = Button(self,bg = "#DEE2E6" , text = "جستجو",font = ('B Koodak' , 13),width=12 ,relief="flat" , fg = "#000000")
-        self.search_ent = Entry(self, bg = '#FFFFFF', width = 35 , font = ('B Koodak' , 14) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.search_btn = Button(User,bg = "#DEE2E6" , text = "جستجو",font = ('B Koodak' , 13),width=12 ,relief="flat" , fg = "#000000")
+        self.search_ent = Entry(User, bg = '#FFFFFF', width = 35 , font = ('B Koodak' , 14) , relief = 'flat' , justify = 'right',fg='#495057')
         self.search_btn.place(x = 85 , y = 33)
-        # self.search_btn.place(x = 0 , y = 0)
         self.search_ent.place(x = 266 , y = 40)
 
-        self.User_registration_submit = Button(self,bg = "#495057" , text = "ثبت",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
-        self.User_registration_edit = Button(self,bg = "#495057" , text = "ویرایش",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
-        self.User_registration_delete = Button(self,bg = "#495057" , text = "حذف",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
-        self.User_registration_exit = Button(self,bg = "#495057" , text = "صفحه اصلی",font = ('B Koodak' , 14),width=17 ,relief="flat" , fg = "#FFFFFF") 
+        self.User_registration_submit = Button(User,bg = "#495057" , text = "ثبت",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
+        self.User_registration_edit = Button(User,bg = "#495057" , text = "ویرایش",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
+        self.User_registration_delete = Button(User,bg = "#495057" , text = "حذف",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
+        self.User_registration_exit = Button(User,bg = "#495057" , text = "صفحه اصلی",font = ('B Koodak' , 14),width=17 ,relief="flat" , fg = "#FFFFFF") 
         self.User_registration_submit.place(x=50, y=815)
         self.User_registration_edit.place(x=250, y=815)    
         self.User_registration_delete.place(x=450, y=815)    
         self.User_registration_exit.place(x=1140, y=815) 
 
-        self.user_table = ttk.Treeview(self,show='headings',height=7)
+        self.user_table = ttk.Treeview(User,show='headings',height=7)
         self.user_table['columns']=('UserWorkPosition','gender','code','last','name','row')
         self.user_table.column('#0',width=0,stretch=NO)
         self.user_table.column('UserWorkPosition',width=220,anchor=E)
@@ -505,6 +521,7 @@ class Uregistration(Tk) :
         self.User_registration_edit.bind('<Button-1>',self.user_edit)
         self.User_registration_delete.bind('<Button-1>',self.user_delete)
         self.search_btn.bind('<Button-1>',self.user_search)
+        self.User_registration_exit.bind('<Button-1>',self.to_home)
 
     #change image ------------------------------------------------------------
     def user_change_image(self,event = None) :
@@ -514,7 +531,7 @@ class Uregistration(Tk) :
         self.new_width = 220
         self.new_height = 175
         self.photo = ImageTk.PhotoImage(self.user_image)
-        self.label = Label(self, image=self.photo, width=self.new_width, height=self.new_height)
+        self.label = Label(User, image=self.photo, width=self.new_width, height=self.new_height)
         self.label.place(x = 197 , y = 148)
     #treeview------------------------------------------------------------
     def user_data_to_table(self):
@@ -535,7 +552,6 @@ class Uregistration(Tk) :
         self.UserC = self.UserCode_ent.get()
         self.UserG = self.UserGender_combo.get()
         self.UserO = self.UserWorkPosition_combo.get()
-        # self.group = self.product_group_combo.get()
         self.UserPhoto = self.covert_to_binary_data(self.filename)
 
         self.con=sql.connect('mydb.db')
@@ -557,7 +573,7 @@ class Uregistration(Tk) :
         self.new_width = 220
         self.new_height = 175
         self.photo = ImageTk.PhotoImage(self.user_image)
-        self.label = Label(self, image=self.photo, width=self.new_width, height=self.new_height)
+        self.label = Label(User, image=self.photo, width=self.new_width, height=self.new_height)
         self.label.place(x = 197 , y = 148)
 
         self.user_table.insert(parent = '',index = 'end',text = 'parent',values = (self.UserO,self.UserG,self.UserC,self.UserL,self.UserN,self.count+1))
@@ -631,6 +647,10 @@ class Uregistration(Tk) :
         sql_delete(self.values[2])
         self.deletee = self.user_table.selection()[0]
         self.user_table.delete(self.deletee)    
-p = Uregistration()
-p.mainloop()
+#====================================================================================================================================================
+#====================================================================================================================================================
+#====================================================================================================================================================
+
+asd = home(main)
+main.mainloop()
 
