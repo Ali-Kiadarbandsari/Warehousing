@@ -4,6 +4,8 @@ from tkinter import ttk
 from tkinter import filedialog
 from PIL import Image, ImageTk
 import io
+from tkinter import messagebox  
+
     
 
 
@@ -13,6 +15,7 @@ loginn = Toplevel()
 Product = Toplevel()
 User = Toplevel()
 stock = Toplevel()
+importt = Toplevel()
 class home:
     def __init__(self,event = None) :
         self.main_page()
@@ -22,6 +25,8 @@ class home:
         self.User_registration()
         self.warehouse_stock()
         self.data_to_stock()
+        self.import_product()
+        self.data_to_import_table()
         # self.check()
         
         self.kalalst = []
@@ -29,7 +34,7 @@ class home:
         self.valuelst = []
         self.count = 0
         self.stocklst = []
-        stock.state("normal")
+        importt.state("normal")
         # Product.state("normal")
         self.data_to_treeview()
         self.user_data_to_table()
@@ -781,6 +786,165 @@ class home:
         #     self.lst=[]
         #     self.kala.delete('0')
         #     self.data_to_list()
+    def import_product(self):
+        importt.geometry("1400x900+250+50")
+        importt.state("withdrawn")
+
+        self.import_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/import_product_back.png')
+        self.import_img = Label(importt,image = self.import_image ,relief="flat")
+        self.import_img.place(x = 0 , y = 0)
+
+        self.check_img = PhotoImage(file = 'img/check_btn.png')
+        self.us_code_ent = Entry(importt, bg = '#FFFFFF', width = 23 , font = ('B Koodak' , 14) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.us_code_btn = Button(importt,bg = "#DEE2E6" , image = self.check_img,font = ('B Koodak' , 13),width=130 ,relief="flat" , fg = "#000000")
+        self.us_code_ent.place(x = 1073 , y = 165)
+        self.us_code_btn.place(x = 924 , y = 157)
+        self.pr_code_ent = Entry(importt, bg = '#FFFFFF', width = 23 , font = ('B Koodak' , 14) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.pr_code_btn = Button(importt,bg = "#DEE2E6" , image = self.check_img,font = ('B Koodak' , 13),width=130 ,relief="flat" , fg = "#000000")
+        self.pr_code_ent.place(x = 1073 , y = 278)
+        self.pr_code_btn.place(x = 1128 , y = 333)
+        
+        self.us_name_lbl = Label(importt,text = ": نام و نام خانوادگی",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.us_gender_lbl = Label(importt,text = ": جنسیت",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.us_name_lbl.place(x = 738, y = 163)
+        self.us_gender_lbl.place(x = 423, y = 163)
+        self.us_name = Label(importt,text= "",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#000000')
+        self.us_gender = Label(importt,text= "",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#000000')
+        self.us_name.place(x = 550, y = 163)
+        self.us_gender.place(x = 319, y = 163)
+
+        self.pr_name_lbl = Label(importt,text = ": نام کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.pr_point_lbl = Label(importt,text = ": نقطه خرید",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.pr_type_lbl = Label(importt,text = ": نوع کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.pr_group_lbl = Label(importt,text = ": گروه کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.pr_name_lbl.place(x = 935, y = 262)
+        self.pr_point_lbl.place(x = 935 , y = 333)
+        self.pr_type_lbl.place(x = 600 , y = 262)
+        self.pr_group_lbl.place(x = 600 , y = 333)
+        self.pr_name = Label(importt,text= "",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#000000')
+        self.pr_point = Label(importt,text= "",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#000000')
+        self.pr_type = Label(importt,text= "",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#000000',width =15)
+        self.pr_group = Label(importt,text= "",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#000000',width =15)
+        self.pr_name.place(x = 804, y = 262)
+        self.pr_point.place(x = 804 , y = 333)
+        self.pr_type.place(x = 320 , y = 262)
+        self.pr_group.place(x = 320 , y = 333)
+
+        self.number_lbl = Label(importt,text = ": تعداد",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.number_ent = Entry(importt, bg = '#FFFFFF', width = 30 , font = ('B Koodak' , 13) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.number_lbl.place(x = 1245, y = 442)
+        self.number_ent.place(x = 946, y = 450)
+        self.date_lbl = Label(importt,text = ": تاریخ",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.date_ent = Entry(importt, bg = '#FFFFFF', width = 30 , font = ('B Koodak' , 13) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.date_lbl.place(x = 757, y = 442)
+        self.date_ent.place(x = 458, y = 450)
+        self.import_submir_img = PhotoImage(file = 'img/check_btn.png')
+        self.import_submir_btn = Button(importt,bg = "#DEE2E6" , image = self.import_submir_img,font = ('B Koodak' , 13),width=138 ,relief="flat" , fg = "#000000")
+        self.import_submir_btn.place(x = 116, y = 437)
+
+        self.import_table = ttk.Treeview(importt,show='headings',height=6)
+        self.import_table['columns']=('date','number','type','group','user_name','product_name','row')
+        self.import_table.column('#0',width=0,stretch=NO)
+        self.import_table.column('date',width=190,anchor=E)
+        self.import_table.column('number',width=190,anchor=E)
+        self.import_table.column('type',width=190,anchor=E)
+        self.import_table.column('group',width=190,anchor=E)
+        self.import_table.column('user_name',width=190,anchor=E)
+        self.import_table.column('product_name',width=190,anchor=E)
+        self.import_table.column('row',width=100,anchor=E)
+        self.import_table.heading('#0',text='',anchor=E)
+        self.import_table.heading('date',text='تاریخ',anchor=E)
+        self.import_table.heading('number',text='تعداد',anchor=E)
+        self.import_table.heading('type',text='نوع کالا',anchor=E)
+        self.import_table.heading('group',text='گروه کالا',anchor=E)
+        self.import_table.heading('user_name',text='نام و نام خانوادگی',anchor=E)
+        self.import_table.heading('product_name',text='نام کالا',anchor=E)
+        self.import_table.heading('row',text='ردیف',anchor=E)
+        ttk.Style().theme_use('clam')
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
+        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
+        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        
+        self.import_table.place(x = 75 , y = 562)
+
+        self.us_code_btn.bind('<Button-1>',self.import_user_fill)
+        self.pr_code_btn.bind('<Button-1>',self.import_prduct_fill)
+        self.import_submir_btn.bind('<Button-1>',self.import_submit)
+
+    def import_user_fill(self,event = None) :
+        try :
+            self.import_user_code = self.us_code_ent.get()
+            con = sql.connect('mydb.db')
+            cur = con.cursor()
+            self.import_user_data = cur.execute('SELECT * FROM user WHERE code="{}"'.format(self.import_user_code))
+            self.import_user_data = list(self.import_user_data)
+            if self.import_user_data[0][4] == "فروشنده" :
+                self.fullname = self.import_user_data[0][0] + " " + self.import_user_data[0][1]
+                self.us_name['text']= '{: ^20}'.format(self.fullname)
+                self.us_gender['text']='{: ^10}'.format(self.import_user_data[0][3])
+            else :
+                messagebox.showinfo("information","کاربر با این کد ملی قادر به ثبت ورود کالا نیست")  
+        except :
+            messagebox.showinfo("information","کاربری با این کد ملی وجود ندارد")
+    def import_prduct_fill(self,event = None) :
+        self.import_product_code = self.pr_code_ent.get()
+        con = sql.connect('mydb.db')
+        cur = con.cursor()
+        self.import_product_data = cur.execute('SELECT * FROM kala WHERE id="{}"'.format(self.import_product_code))
+        self.import_product_data = list(self.import_product_data)
+        self.pr_name['text']= '{: ^10}'.format(self.import_product_data[0][1])
+        self.pr_point['text']='{: ^10}'.format(self.import_product_data[0][2])
+        self.pr_type['text']='{: ^20}'.format(self.import_product_data[0][4])
+        self.pr_group['text']='{: ^20}'.format(self.import_product_data[0][5])
+    def import_submit(self,event = None) :
+        self.import_number = self.number_ent.get()
+        self.import_date = self.date_ent.get()
+        # self.import_count = 0
+        self.con=sql.connect('mydb.db')
+        self.cur=self.con.cursor()
+        self.data=(self.pr_name['text'],self.us_name['text'],self.pr_group['text'],self.pr_type['text'],self.import_number,self.import_date)
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS import (product_name TEXT ,user_name TEXT,groupp TEXT
+        ,type TEXT,stock INTEGER,date TEXT)''')
+        self.cur.execute('INSERT INTO import(product_name,user_name,groupp,type,stock,date) VALUES(?,?,?,?,?,?)',self.data)
+        self.con.commit()
+        self.import_table.insert(parent = '',index = 'end',text = 'parent',values = (self.import_date,self.import_number,self.pr_type['text'],self.pr_group['text'],self.us_name['text'],self.pr_name['text'],self.import_count+1))
+        con = sql.connect('mydb.db')
+        cur = con.cursor()
+        self.edit_stck = cur.execute('SELECT stock FROM kala WHERE id="{}"'.format(self.import_product_code))
+        self.edit_stck = list(self.edit_stck)
+        self.new_stock = int(self.edit_stck[0][0]) + int(self.import_number)
+        print(self.new_stock)
+        command = ' UPDATE kala SET stock = {} WHERE id="{}" '.format(self.new_stock,self.import_product_code)    
+        cur.execute(command)    
+        con.commit()
+        self.us_name['text'] = ""
+        self.us_gender['text'] = ""
+        self.pr_name['text'] = ""
+        self.pr_point['text'] = ""
+        self.pr_type['text'] = ""
+        self.pr_group['text'] = ""
+        self.us_code_ent.delete(0,END)
+        self.pr_code_ent.delete(0,END)
+        self.number_ent.delete(0,END)
+        self.date_ent.delete(0,END)
+    def data_to_import_table(self):
+        self.import_lst = []
+        self.import_count=0
+        self.con=sql.connect('mydb.db')
+        self.cur=self.con.cursor()
+        self.row=self.cur.execute('SELECT * FROM import')
+        for i in self.row :
+            self.import_lst.append(i)
+        for i in self.import_lst:
+            self.import_table.insert(parent='',index='end',iid=self.import_count,text='',
+            values=(i[5],i[4],i[3],i[2],i[1],i[0],str(self.import_count+1)))
+            self.import_count += 1
+        # self.UserName_ent.delete(0,END)
+        # self.UserLast_ent.delete(0,END)
+        # self.UserCode_ent.delete(0,END)
+        # self.UserGender_combo.set("یک گزینه را انتخاب کنید")
+        # self.UserWorkPosition_combo.set("یک گزینه را انتخاب کنید")
 asd = home(main)
 main.mainloop()
 
