@@ -12,6 +12,7 @@ registration = Toplevel()
 loginn = Toplevel()
 Product = Toplevel()
 User = Toplevel()
+stock = Toplevel()
 class home:
     def __init__(self,event = None) :
         self.main_page()
@@ -19,14 +20,17 @@ class home:
         self.login()
         self.Product_registration()
         self.User_registration()
-
-        self.check()
+        self.warehouse_stock()
+        self.data_to_stock()
+        # self.check()
         
         self.kalalst = []
         self.kalaid = ""
         self.valuelst = []
         self.count = 0
-
+        self.stocklst = []
+        stock.state("normal")
+        # Product.state("normal")
         self.data_to_treeview()
         self.user_data_to_table()
 #====================================================================================================================================================
@@ -124,6 +128,12 @@ class home:
         self.cur = self.con.cursor()
         self.data=(self.name_v,self.last_v,self.user_v,self.passw_v)
         self.cur.execute('''CREATE TABLE IF NOT EXISTS login (name TEXT ,last TEXT,username TEXT,password TEXT)''')
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS kala (id   ,name TEXT ,point INTEGER,Description TEXT
+        ,type TEXT,groupp TEXT,stock INTEGER,photoo BLOB)''')
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS user (name TEXT ,last_name TEXT,code TEXT
+        ,gender TEXT,work_Pposition TEXT,photoo BLOB)''')
+        # self.cur.execute('''CREATE TABLE IF NOT EXISTS stock (name TEXT ,code TEXT,groupp TEXT
+        # ,type TEXT,number INTEGER,photoo BLOB)''')
         self.cur.execute('INSERT INTO login(name,last,username,password) VALUES(?,?,?,?)',self.data)
         self.con.commit()
 
@@ -184,6 +194,7 @@ class home:
         self.btn8.place(x = 961 , y = 558)
         self.btn1.bind('<Button-1>',self.main_to_Pregistration)
         self.btn2.bind('<Button-1>',self.main_to_Uregistration)
+        self.btn3.bind('<Button-1>',self.main_to_warehouse_stock)
 
     def main_to_Pregistration(self,event = None) :
         main.state("withdraw")
@@ -191,12 +202,18 @@ class home:
     def main_to_Uregistration(self,event = None) :
         main.state("withdraw")
         User.state("normal")
+    def main_to_warehouse_stock(self,event = None) :
+        main.state("withdraw")
+        stock.state("normal")
     def to_home(self,event = None):
         if Product.state() == "normal" :
             Product.state("withdrawn")
             main.state("normal")
         elif User.state() == "normal" :
             User.state("withdrawn")
+            main.state("normal")
+        elif stock.state() == "normal" :
+            stock.state("withdrawn")
             main.state("normal")
 #====================================================================================================================================================
 #====================================================================================================================================================
@@ -275,16 +292,15 @@ class home:
         self.kala.column('Name',width=220,anchor=E)
         self.kala.column('row',width=150,anchor=E)
         self.kala.heading('#0',text='',anchor=E)
-        self.kala.heading('group',text=' : گروه کالا',anchor=E)
-        self.kala.heading('Type',text=' : نوع کالا',anchor=E)
-        self.kala.heading('point',text=' : نقطه خرید',anchor=E)
-        self.kala.heading('id',text=' : کد کالا',anchor=E)
-        self.kala.heading('Name',text=' : نام کالا',anchor=E)
-        self.kala.heading('row',text=' : ردیف',anchor=E)
+        self.kala.heading('group',text='گروه کالا',anchor=E)
+        self.kala.heading('Type',text='نوع کالا',anchor=E)
+        self.kala.heading('point',text='نقطه خرید',anchor=E)
+        self.kala.heading('id',text='کد کالا',anchor=E)
+        self.kala.heading('Name',text='نام کالا',anchor=E)
+        self.kala.heading('row',text='ردیف',anchor=E)
         ttk.Style().theme_use('clam')
         ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
-        ttk.Style().map("Treeview.Heading",
-            background=[('active','#686A75')])
+        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
         ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
         ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
         
@@ -292,11 +308,13 @@ class home:
 
         self.photo_submit.bind('<Button-1>',self.change_image)
         self.Product_registration_submit.bind('<Button-1>',self.Product_registration_info)
+        # self.Product_registration_submit.bind('<Button-1>',self.fill_stock_table)
         self.kala.bind('<Button-1>',self.show_info)
         self.kala.bind('<ButtonRelease-1>',self.show_info)
+        self.search_btn.bind('<Button-1>',self.product_search)
         self.Product_registration_edit.bind('<Button-1>',self.edit)
-        self.Product_registration_delete.bind('<Button-1>',self.delete)
-        self.search_btn.bind('<Button-1>',self.search)
+        self.Product_registration_delete.bind('<Button-1>',self.product_delete)
+        # self.search_btn.bind('<Button-1>',self.search)
         self.Product_registration_exit.bind('<Button-1>',self.to_home)
     #edit part------------------------------------------------------------
     def show_info(self,event = None) :
@@ -309,7 +327,7 @@ class home:
 
         self.selected = self.kala.focus()
         self.values = self.kala.item(self.selected , "values")
-        self.valuelst = self.sql_search(self.values[3])
+        self.valuelst = self.product_sql_search(self.values[3])
         self.product_name_ent.insert(0,self.valuelst[0][1])
         self.product_code_ent.insert(0,self.valuelst[0][0])
         self.point_purchase_ent.insert(0,self.valuelst[0][2])
@@ -333,21 +351,28 @@ class home:
         self.desc = self.Description_ent.get()
         self.type = self.product_type_combo.get()
         self.group = self.product_group_combo.get()
-        self.sql_update(self.values[3],self.code,self.name,self.point,self.desc,self.type,self.group)
+        self.product_sql_update(self.values[3],self.code,self.name,self.point,self.desc,self.type,self.group)
         self.kala.item(self.selected ,values = (self.group,self.type,self.point,self.code,self.name,self.values[5])) 
-    def sql_update(self,id1,code1,name1,point1,Description1,type1,group1):
+
+        self.product_type_combo.set("یک گزینه را انتخاب کنید")
+        self.product_group_combo.set("یک گزینه را انتخاب کنید")
+        self.product_code_ent.delete(0,END)
+        self.product_name_ent.delete(0,END)
+        self.point_purchase_ent.delete(0,END)
+        self.Description_ent.delete(0,END)
+    def product_sql_update(self,id1,code1,name1,point1,Description1,type1,group1):
         con = sql.connect('mydb.db')
         cur = con.cursor()
         command = ' UPDATE kala SET id = "{}" , name = "{}", point = "{}", Description = "{}", type = "{}",groupp = "{}" WHERE id="{}" '.format(code1,name1,point1,Description1,type1,group1,id1)    
         cur.execute(command)    
         con.commit()
-    def sql_search(self,id1):
+    def product_sql_search(self,id1):
         con = sql.connect('mydb.db')
         cur = con.cursor()
         row = cur.execute('SELECT * FROM kala WHERE id="{}"'.format(id1))    
         return list(row)
     #delet part------------------------------------------------------------
-    def delete(self, event = None) :
+    def product_delete(self, event = None) :
         con = sql.connect('mydb.db')
         cur = con.cursor()
 
@@ -359,7 +384,7 @@ class home:
         self.deletee = self.kala.selection()[0]
         self.kala.delete(self.deletee)        
     #search part------------------------------------------------------------
-    def search(self,event = None):
+    def product_search(self,event = None):
         self.con=sql.connect('mydb.db')
         self.cur=self.con.cursor()
         self.idK=self.search_ent.get()
@@ -372,7 +397,7 @@ class home:
             self.kala.insert(parent='',index='end',iid=self.count,text='',
             values=(self.search_list[0][5],self.search_list[0][4],self.search_list[0][2],
             self.search_list[0][0],self.search_list[0][1],str(self.count+1)))
-        # else:
+        # # else:
         #     self.lst=[]
         #     self.kala.delete('0')
         #     self.data_to_list()
@@ -400,11 +425,17 @@ class home:
 
         self.con=sql.connect('mydb.db')
         self.cur=self.con.cursor()
-        self.data=(self.code,self.name,self.point,self.desc,self.type,self.group,self.photo)
+        self.data=(self.code,self.name,self.point,self.desc,self.type,0,self.group,self.photo)
         self.cur.execute('''CREATE TABLE IF NOT EXISTS kala (id   ,name TEXT ,point INTEGER,Description TEXT
-        ,type TEXT,groupp TEXT,photoo BLOB)''')
-        self.cur.execute('INSERT INTO kala(id,name,point,Description,type,groupp,photoo) VALUES(?,?,?,?,?,?,?)',self.data)
+        ,type TEXT,groupp TEXT,stock INTEGER,photoo BLOB)''')
+        self.cur.execute('INSERT INTO kala(id,name,point,Description,type,stock,groupp,photoo) VALUES(?,?,?,?,?,?,?,?)',self.data)
         self.con.commit()
+
+        # self.stock_data=(self.name,self.code,self.group,self.type,0,self.photo)
+        # self.cur.execute('''CREATE TABLE IF NOT EXISTS stock (name TEXT ,code TEXT,groupp TEXT
+        # ,type TEXT,number INTEGER,photoo BLOB)''')
+        # self.cur.execute('INSERT INTO stock(name,code,groupp,type,number,photoo) VALUES(?,?,?,?,?,?)',self.stock_data)
+        # self.con.commit()
 
         self.product_type_combo.set("یک گزینه را انتخاب کنید")
         self.product_group_combo.set("یک گزینه را انتخاب کنید")
@@ -428,6 +459,7 @@ class home:
         self.photo = ImageTk.PhotoImage(self.procuct_image)
         self.label = Label(Product, image=self.photo, width=self.new_width, height=self.new_height)
         self.label.place(x=125, y=153)   
+
         
     # def binary_to_img(self,filename):
     #     # image_data = img
@@ -476,10 +508,10 @@ class home:
         self.image_btn = Button(User,bg = "#6C757D" , text = "بارگذاری عکس",font = ('B Koodak' , 12),width=13 ,relief="flat" , fg = "#FFFFFF")
         self.image_btn.place(x = 237 , y = 341)
 
-        self.search_btn = Button(User,bg = "#DEE2E6" , text = "جستجو",font = ('B Koodak' , 13),width=12 ,relief="flat" , fg = "#000000")
-        self.search_ent = Entry(User, bg = '#FFFFFF', width = 35 , font = ('B Koodak' , 14) , relief = 'flat' , justify = 'right',fg='#495057')
-        self.search_btn.place(x = 85 , y = 33)
-        self.search_ent.place(x = 266 , y = 40)
+        self.user_search_btn = Button(User,bg = "#DEE2E6" , text = "جستجو",font = ('B Koodak' , 13),width=12 ,relief="flat" , fg = "#000000")
+        self.user_search_ent = Entry(User, bg = '#FFFFFF', width = 35 , font = ('B Koodak' , 14) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.user_search_btn.place(x = 85 , y = 33)
+        self.user_search_ent.place(x = 266 , y = 40)
 
         self.User_registration_submit = Button(User,bg = "#495057" , text = "ثبت",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
         self.User_registration_edit = Button(User,bg = "#495057" , text = "ویرایش",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
@@ -508,8 +540,7 @@ class home:
         self.user_table.heading('row',text='ردیف',anchor=E)
         ttk.Style().theme_use('clam')
         ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
-        ttk.Style().map("Treeview.Heading",
-            background=[('active','#686A75')])
+        ttk.Style().map("Treeview.Heading",background=[('active','#686A75')])
         ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
         ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
         self.user_table.place(x = 75 , y = 477)
@@ -520,7 +551,7 @@ class home:
         self.user_table.bind('<ButtonRelease-1>',self.user_show_info)
         self.User_registration_edit.bind('<Button-1>',self.user_edit)
         self.User_registration_delete.bind('<Button-1>',self.user_delete)
-        self.search_btn.bind('<Button-1>',self.user_search)
+        self.user_search_btn.bind('<Button-1>',self.user_search)
         self.User_registration_exit.bind('<Button-1>',self.to_home)
 
     #change image ------------------------------------------------------------
@@ -591,7 +622,7 @@ class home:
 
         self.selected = self.user_table.focus()
         self.values = self.user_table.item(self.selected , "values")
-        self.valuelst = self.sql_search(self.values[2])
+        self.valuelst = self.user_sql_search(self.values[2])
         self.UserName_ent.insert(0,self.valuelst[0][0])
         self.UserLast_ent.insert(0,self.valuelst[0][1])
         self.UserCode_ent.insert(0,self.valuelst[0][2])
@@ -604,15 +635,21 @@ class home:
         self.usercode = self.UserCode_ent.get()
         self.usergender = self.UserGender_combo.get()
         self.userworkposition = self.UserWorkPosition_combo.get()
-        self.sql_update(self.values[2],self.username,self.userlast,self.usercode,self.usergender,self.userworkposition)
+        self.user_sql_update(self.values[2],self.username,self.userlast,self.usercode,self.usergender,self.userworkposition)
         self.user_table.item(self.selected ,values = (self.userworkposition,self.usergender,self.usercode,self.userlast,self.username,self.values[5])) 
-    def sql_update(self,id1,name1,last1,code1,gender1,userworkposition1):
+
+        self.UserName_ent.delete(0,END)
+        self.UserLast_ent.delete(0,END)
+        self.UserCode_ent.delete(0,END)
+        self.UserGender_combo.set("یک گزینه را انتخاب کنید")
+        self.UserWorkPosition_combo.set("یک گزینه را انتخاب کنید")
+    def user_sql_update(self,id1,name1,last1,code1,gender1,userworkposition1):
         con = sql.connect('mydb.db')
         cur = con.cursor()
         command = ' UPDATE user SET name = "{}" , last_name = "{}", code = "{}", gender = "{}",work_Pposition = "{}" WHERE code="{}" '.format(name1,last1,code1,gender1,userworkposition1,id1)    
         cur.execute(command)    
         con.commit()
-    def sql_search(self,id1):
+    def user_sql_search(self,id1):
         con = sql.connect('mydb.db')
         cur = con.cursor()
         row = cur.execute('SELECT * FROM user WHERE code="{}"'.format(id1))    
@@ -621,7 +658,7 @@ class home:
     def user_search(self,event = None):
         self.con=sql.connect('mydb.db')
         self.cur=self.con.cursor()
-        self.userId=self.search_ent.get()
+        self.userId=self.user_search_ent.get()
         self.count=0
         if self.userId !='':
             for i in self.user_table.get_children():
@@ -650,7 +687,100 @@ class home:
 #====================================================================================================================================================
 #====================================================================================================================================================
 #====================================================================================================================================================
+    def warehouse_stock(self) :
+        stock.geometry("1200x700+350+200")
+        stock.state("withdrawn")
 
+        self.stock_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/stock_back.png')
+        self.stock_img = Label(stock,image = self.stock_image ,relief="flat")
+        self.stock_img.place(x = 0 , y = 0)
+
+        self.stock_table = ttk.Treeview(stock,show='headings',height=11)
+        self.stock_table['columns']=('number','type','group','code','name','row')
+        self.stock_table.column('#0',width=0,stretch=NO)
+        self.stock_table.column('number',width=190,anchor=E)
+        self.stock_table.column('type',width=190,anchor=E)
+        self.stock_table.column('group',width=190,anchor=E)
+        self.stock_table.column('code',width=190,anchor=E)
+        self.stock_table.column('name',width=190,anchor=E)
+        self.stock_table.column('row',width=100,anchor=E)
+        self.stock_table.heading('#0',text='',anchor=E)
+        self.stock_table.heading('number',text='تعداد',anchor=E)
+        self.stock_table.heading('type',text='نوع کالا',anchor=E)
+        self.stock_table.heading('group',text='گروه کالا',anchor=E)
+        self.stock_table.heading('code',text='کد کالا',anchor=E)
+        self.stock_table.heading('name',text='نام کالا',anchor=E)
+        self.stock_table.heading('row',text='ردیف',anchor=E)
+        ttk.Style().theme_use('clam')
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
+        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
+        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        
+        self.stock_table.place(x = 75 , y = 135)
+
+        self.stock_search_btn = Button(stock,bg = "#DEE2E6" , text = "جستجو",font = ('B Koodak' , 13),width=12 ,relief="flat" , fg = "#000000")
+        self.stock_search_ent = Entry(stock, bg = '#FFFFFF', width = 25 , font = ('B Koodak' , 14) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.stock_search_btn.place(x = 63 , y = 33)
+        self.stock_search_ent.place(x = 241 , y = 40)
+
+        # self.User_registration_submit = Button(User,bg = "#495057" , text = "ثبت",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
+        # self.User_registration_edit = Button(User,bg = "#495057" , text = "ویرایش",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
+        self.User_registration_delete = Button(stock,bg = "#495057" , text = "حذف",font = ('B Koodak' , 14),width=15 ,relief="flat" , fg = "#FFFFFF") 
+        self.User_registration_exit = Button(stock,bg = "#495057" , text = "صفحه اصلی",font = ('B Koodak' , 14),width=17 ,relief="flat" , fg = "#FFFFFF") 
+        # self.User_registration_submit.place(x=50, y=815)
+        # self.User_registration_edit.place(x=250, y=815)    
+        self.User_registration_delete.place(x=55, y=625)    
+        self.User_registration_exit.place(x=935, y=625) 
+        self.stock_search_btn.bind('<Button-1>',self.stock_search)
+        self.User_registration_exit.bind('<Button-1>',self.to_home)
+        self.User_registration_delete.bind('<Button-1>',self.stock_delete)
+        self.stock_table.bind('<Button-1>',self.stock_select)
+        self.stock_table.bind('<ButtonRelease-1>',self.stock_select)
+    def data_to_stock(self) :
+        self.stocklst = []
+        self.count=0
+        self.con=sql.connect('mydb.db')
+        self.cur=self.con.cursor()
+        row=self.cur.execute('SELECT * FROM kala')
+        for i in row :
+            self.stocklst.append(i)
+        for i in self.stocklst:
+            self.stock_table.insert(parent='',index='end',iid=self.count,text='',
+            values=(i[6],i[4],i[5],i[0],i[1],str(self.count+1)))
+            self.count += 1
+    def stock_search(self,event = None):
+        self.con=sql.connect('mydb.db')
+        self.cur=self.con.cursor()
+        self.stockID=self.stock_search_ent.get()
+        self.count=0
+        if self.stockID !='':
+            for i in self.stock_table.get_children():
+                self.stock_table.delete(i)
+            self.row=self.cur.execute('SELECT * FROM kala WHERE id="{}"'.format(self.stockID))
+            self.search_list=list(self.row)
+            self.stock_table.insert(parent='',index='end',iid=self.count,text='',
+            values=(self.search_list[0][5],self.search_list[0][4],self.search_list[0][2],
+            self.search_list[0][0],self.search_list[0][1],str(self.count+1)))
+    def stock_select(self, event = None) :
+        self.stock_selected = self.stock_table.focus()
+        self.stock_values = self.stock_table.item(self.stock_selected , "values")
+        print(self.stock_values)
+    def stock_delete(self, event = None) :
+        con = sql.connect('mydb.db')
+        cur = con.cursor()
+
+        def sql_delete(name):
+            command = ' DELETE FROM kala WHERE id="{}" '.format(name)    
+            cur.execute(command)    
+            con.commit()
+        sql_delete(self.stock_values[3])
+        self.deletee = self.stock_table.selection()[0]
+        self.stock_table.delete(self.deletee) 
+        # # else:
+        #     self.lst=[]
+        #     self.kala.delete('0')
+        #     self.data_to_list()
 asd = home(main)
 main.mainloop()
 
