@@ -17,6 +17,7 @@ User = Toplevel()
 stock = Toplevel()
 importt = Toplevel()
 purchase = Toplevel()
+departure = Toplevel()
 class home:
     def __init__(self,event = None) :
         self.create_tables()
@@ -28,6 +29,7 @@ class home:
         self.warehouse_stock()
         self.import_product()
         self.purchase_request()
+        self.departure_product()
         # self.check()
         
         self.kalalst = []
@@ -35,14 +37,16 @@ class home:
         self.valuelst = []
         self.count = 0
         self.purchase_count = 0
+        self.departure_count = 0
         self.stocklst = []
-        purchase.state("normal")
-        main.state("normal")
+        departure.state("normal")
+        # main.state("normal")
         self.data_to_treeview()
         self.user_data_to_table()
         self.data_to_stock()
         self.data_to_import_table()
         self.data_to_purchase_table()
+        self.data_to_departure_table()
 #====================================================================================================================================================
 #====================================================================================================================================================
 #====================================================================================================================================================
@@ -858,7 +862,7 @@ class home:
         self.date_ent = Entry(importt, bg = '#FFFFFF', width = 30 , font = ('B Koodak' , 13) , relief = 'flat' , justify = 'right',fg='#495057')
         self.date_lbl.place(x = 757, y = 442)
         self.date_ent.place(x = 458, y = 450)
-        self.import_submir_img = PhotoImage(file = 'img/check_btn.png')
+        self.import_submir_img = PhotoImage(file = 'img/import_submit.png')
         self.import_submir_btn = Button(importt,bg = "#DEE2E6" , image = self.import_submir_img,font = ('B Koodak' , 13),width=138 ,relief="flat" , fg = "#000000")
         self.import_submir_btn.place(x = 116, y = 437)
 
@@ -1043,7 +1047,175 @@ class home:
     def purchase_select(self, event = None) :
         self.purchase_selected = self.purchase_table.focus()
         self.purchase_values = self.purchase_table.item(self.purchase_selected , "values")
+#====================================================================================================================================================
+#====================================================================================================================================================
+#====================================================================================================================================================
+    def departure_product(self) :
+        departure.geometry("1500x900+250+50")
+        departure.state("withdrawn")
 
+        self.departure_image = PhotoImage(file = 'img/departure_back.png')
+        self.departure_img = Label(departure,image = self.departure_image ,relief="flat")
+        self.departure_img.place(x = 0 , y = 0)
+
+        # self.import_home_img = PhotoImage(file = 'img/import_home_btn.png')
+        # self.import_home_btn = Button(importt,bg = "#495057" , image = self.import_home_img,font = ('B Koodak' , 13),width=189 ,relief="flat" , fg = "#000000",activebackground="#495057")
+        # self.import_home_btn.place(x = 75 , y = 43)
+
+        self.check_img = PhotoImage(file = 'img/check_btn.png')
+        self.departure_us_code_ent = Entry(departure, bg = '#FFFFFF', width = 25 , font = ('B Koodak' , 14) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.departure_us_code_btn = Button(departure,bg = "#DEE2E6" , image = self.check_img,font = ('B Koodak' , 13),width=130 ,relief="flat" , fg = "#000000")
+        self.departure_us_code_ent.place(x = 1125 , y = 147)
+        self.departure_us_code_btn.place(x = 1186 , y = 195)
+        self.departure_pr_code_ent = Entry(departure, bg = '#FFFFFF', width = 33 , font = ('B Koodak' , 14) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.departure_pr_code_btn = Button(departure,bg = "#DEE2E6" , image = self.check_img,font = ('B Koodak' , 13),width=130 ,relief="flat" , fg = "#000000")
+        self.departure_pr_code_ent.place(x = 636 , y = 156)
+        self.departure_pr_code_btn.place(x = 469 , y = 147)
+        
+        self.departure_us_name_lbl = Label(departure,text = ": نام",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.departure_us_last_lbl = Label(departure,text = ": نام خانوادگی",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.departure_us_gender_lbl = Label(departure,text = ": جنسیت",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.departure_us_name_lbl.place(x = 1299, y = 271)
+        self.departure_us_last_lbl.place(x = 1299, y = 321)
+        self.departure_us_gender_lbl.place(x = 1299, y = 373)
+        self.departure_us_name = Label(departure,text= "",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#000000')
+        self.departure_us_last = Label(departure,text= "",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#000000')
+        self.departure_us_gender = Label(departure,text= "",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#000000')
+        self.departure_us_name.place(x = 1197, y = 271)
+        self.departure_us_last.place(x = 1197, y = 321)
+        self.departure_us_gender.place(x = 1197, y = 373)
+
+        self.departure_pr_name_lbl = Label(departure,text = ": نام کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.departure_pr_number_lbl = Label(departure,text = ": موجودی",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.departure_pr_type_lbl = Label(departure,text = ": نوع کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.departure_pr_group_lbl = Label(departure,text = ": گروه کالا",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.departure_pr_name_lbl.place(x = 960, y = 248)
+        self.departure_pr_number_lbl.place(x = 960 , y = 334)
+        self.departure_pr_type_lbl.place(x = 770 , y = 248)
+        self.departure_pr_group_lbl.place(x = 770 , y = 334)
+        self.departure_pr_name = Label(departure,text= "",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#000000')
+        self.departure_pr_number = Label(departure,text= "",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#000000')
+        self.departure_pr_type = Label(departure,text= "",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#000000',width= 10)
+        self.departure_pr_group = Label(departure,text= "",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#000000',width= 10)
+        self.departure_pr_name.place(x = 874, y = 248)
+        self.departure_pr_number.place(x = 874 , y = 334)
+        self.departure_pr_type.place(x = 570, y = 248)
+        self.departure_pr_group.place(x = 570 , y = 334)
+
+        self.departure_number_lbl = Label(departure,text = "تعداد",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.departure_number_ent = Entry(departure, bg = '#FFFFFF', width = 20 , font = ('B Koodak' , 13) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.departure_number_lbl.place(x = 179, y = 146)
+        self.departure_number_ent.place(x = 113, y = 192)
+        self.departure_date_lbl = Label(departure,text = "تاریخ",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.departure_date_ent = Entry(departure, bg = '#FFFFFF', width = 20 , font = ('B Koodak' , 13) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.departure_date_lbl.place(x = 179, y = 245)
+        self.departure_date_ent.place(x = 113, y = 292)
+        self.departure_submit_img = PhotoImage(file = 'img/import_submit.png')
+        self.departure_submit_btn = Button(departure,bg = "#DEE2E6" , image = self.import_submir_img,font = ('B Koodak' , 13),width=138 ,relief="flat" , fg = "#000000")
+        self.departure_submit_btn.place(x = 131, y = 368)
+
+        self.departure_table = ttk.Treeview(departure,show='headings',height=6)
+        self.departure_table['columns']=('date','number','type','group','user_name','product_name','row')
+        self.departure_table.column('#0',width=0,stretch=NO)
+        self.departure_table.column('date',width=210,anchor=E)
+        self.departure_table.column('number',width=210,anchor=E)
+        self.departure_table.column('type',width=210,anchor=E)
+        self.departure_table.column('group',width=210,anchor=E)
+        self.departure_table.column('user_name',width=210,anchor=E)
+        self.departure_table.column('product_name',width=210,anchor=E)
+        self.departure_table.column('row',width=100,anchor=E)
+        self.departure_table.heading('#0',text='',anchor=E)
+        self.departure_table.heading('date',text='تاریخ',anchor=E)
+        self.departure_table.heading('number',text='تعداد',anchor=E)
+        self.departure_table.heading('type',text='نوع کالا',anchor=E)
+        self.departure_table.heading('group',text='گروه کالا',anchor=E)
+        self.departure_table.heading('user_name',text='نام و نام خانوادگی',anchor=E)
+        self.departure_table.heading('product_name',text='نام کالا',anchor=E)
+        self.departure_table.heading('row',text='ردیف',anchor=E)
+        ttk.Style().theme_use('clam')
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
+        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
+        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        
+        self.departure_table.place(x = 75 , y = 500)
+
+        self.departure_us_code_btn.bind('<Button-1>',self.departure_user_fill)
+        self.departure_pr_code_btn.bind('<Button-1>',self.departure_prduct_fill)
+        self.departure_submit_btn.bind('<Button-1>',self.departure_submit)
+        # self.departure_home_btn.bind('<Button-1>',self.to_home)
+        # self.departure_home_btn.bind('<Button-1>',self.to_home)
+
+    def departure_user_fill(self,event = None) :
+        try :
+            self.departure_user_code = self.departure_us_code_ent.get()
+            con = sql.connect('mydb.db')
+            cur = con.cursor()
+            self.departure_user_data = cur.execute('SELECT * FROM user WHERE code="{}"'.format(self.departure_user_code))
+            self.departure_user_data = list(self.departure_user_data)
+            if self.departure_user_data[0][4] == "کارمند" :
+                self.departure_us_name['text']= '{: ^10}'.format(self.departure_user_data[0][0])
+                self.departure_us_last['text']= '{: ^10}'.format(self.departure_user_data[0][1])
+                self.departure_us_gender['text']='{: ^10}'.format(self.departure_user_data[0][3])
+            else :
+                messagebox.showinfo("information","کاربر با این کد ملی قادر به ثبت ورود کالا نیست")  
+        except :
+            messagebox.showinfo("information","کاربری با این کد ملی وجود ندارد")
+    def departure_prduct_fill(self,event = None) :
+        self.departure_product_code = self.departure_pr_code_ent.get()
+        con = sql.connect('mydb.db')
+        cur = con.cursor()
+        self.departure_product_data = cur.execute('SELECT * FROM kala WHERE id="{}"'.format(self.departure_product_code))
+        self.departure_product_data = list(self.departure_product_data)
+        self.departure_pr_name['text']= '{: ^10}'.format(self.departure_product_data[0][1])
+        self.departure_pr_number['text']='{: ^10}'.format(self.departure_product_data[0][2])
+        self.departure_pr_type['text']='{: ^20}'.format(self.departure_product_data[0][4])
+        self.departure_pr_group['text']='{: ^20}'.format(self.departure_product_data[0][5])
+    def departure_submit(self,event = None) :
+        self.departure_number = self.departure_number_ent.get()
+        self.departure_date = self.departure_date_ent.get()
+        # self.import_count = 0
+        self.con=sql.connect('mydb.db')
+        self.cur=self.con.cursor()
+        self.departure_fullname = self.departure_user_data[0][0] + " " + self.departure_user_data[0][1]
+        self.data=(self.departure_pr_name['text'],self.departure_fullname,self.departure_pr_group['text'],self.departure_pr_type['text'],self.departure_number,self.departure_date)
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS departure (product_name TEXT ,user_name TEXT,groupp TEXT
+        ,type TEXT,stock INTEGER,date TEXT)''')
+        self.cur.execute('INSERT INTO departure(product_name,user_name,groupp,type,stock,date) VALUES(?,?,?,?,?,?)',self.data)
+        self.con.commit()
+        self.departure_table.insert(parent = '',index = 'end',text = 'parent',values = (self.departure_date,self.departure_number,self.departure_pr_type['text'],self.departure_pr_group['text'],self.departure_fullname,self.departure_pr_name['text'],self.departure_count+1))
+        con = sql.connect('mydb.db')
+        cur = con.cursor()
+        self.departure_edit_stock = cur.execute('SELECT stock FROM kala WHERE id="{}"'.format(self.departure_product_code))
+        self.departure_edit_stock = list(self.departure_edit_stock)
+        self.departure_new_stock = int(self.departure_edit_stock[0][0]) - int(self.departure_number)
+        print(self.departure_new_stock)
+        command = ' UPDATE kala SET stock = {} WHERE id="{}" '.format(self.departure_new_stock,self.departure_product_code)    
+        cur.execute(command)    
+        con.commit()
+        self.departure_us_name['text'] = ""
+        self.departure_us_last['text'] = ""
+        self.departure_us_gender['text'] = ""
+        self.departure_pr_name['text'] = ""
+        self.departure_pr_number['text'] = ""
+        self.departure_pr_type['text'] = ""
+        self.departure_pr_group['text'] = ""
+        self.departure_us_code_ent.delete(0,END)
+        self.departure_pr_code_ent.delete(0,END)
+        self.departure_number_ent.delete(0,END)
+        self.departure_date_ent.delete(0,END)
+    def data_to_departure_table(self):
+        self.departure_lst = []
+        self.departure_count=0
+        self.con=sql.connect('mydb.db')
+        self.cur=self.con.cursor()
+        self.row=self.cur.execute('SELECT * FROM departure')
+        for i in self.row :
+            self.departure_lst.append(i)
+        for i in self.departure_lst:
+            self.departure_table.insert(parent='',index='end',iid=self.departure_count,text='',
+            values=(i[5],i[4],i[3],i[2],i[1],i[0],str(self.departure_count+1)))
+            self.departure_count += 1
 asd = home(main)
 main.mainloop()
 
