@@ -16,36 +16,52 @@ Product = Toplevel()
 User = Toplevel()
 stock = Toplevel()
 importt = Toplevel()
+purchase = Toplevel()
 class home:
     def __init__(self,event = None) :
+        self.create_tables()
         self.main_page()
         self.register()
         self.login()
         self.Product_registration()
         self.User_registration()
         self.warehouse_stock()
-        self.data_to_stock()
         self.import_product()
-        self.data_to_import_table()
+        self.purchase_request()
         # self.check()
         
         self.kalalst = []
         self.kalaid = ""
         self.valuelst = []
         self.count = 0
+        self.purchase_count = 0
         self.stocklst = []
-        importt.state("normal")
-        # Product.state("normal")
+        purchase.state("normal")
+        main.state("normal")
         self.data_to_treeview()
         self.user_data_to_table()
+        self.data_to_stock()
+        self.data_to_import_table()
+        self.data_to_purchase_table()
 #====================================================================================================================================================
 #====================================================================================================================================================
 #====================================================================================================================================================
+    def create_tables(self) :
+        self.con = sql.connect('mydb.db')
+        self.cur = self.con.cursor()
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS login (name TEXT ,last TEXT,username TEXT,password TEXT)''')
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS kala (id   ,name TEXT ,point INTEGER,Description TEXT
+        ,type TEXT,groupp TEXT,stock INTEGER,photoo BLOB)''')
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS user (name TEXT ,last_name TEXT,code TEXT
+        ,gender TEXT,work_Pposition TEXT,photoo BLOB)''')
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS import (product_name TEXT ,user_name TEXT,groupp TEXT
+        ,type TEXT,stock INTEGER,date TEXT)''')
+        self.con.commit()
     def register(self) :
         registration.state("withdraw")
         registration.geometry('900x500+450+150')
         registration.title('register')
-        self.register_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/register_back.png')
+        self.register_image = PhotoImage(file = 'img/register_back.png')
         self.register_img = Label(registration,image = self.register_image )
         self.register_img.place(x = 0 , y = 0)
 
@@ -84,7 +100,7 @@ class home:
         loginn.geometry('450x550+550+150')
         loginn.title('login')
 
-        self.login_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/login_back.png')
+        self.login_image = PhotoImage(file = 'img/login_back.png')
         self.login_img = Label(loginn,image = self.login_image ,relief="flat")
         self.login_img.place(x = 0 , y = 0)
 
@@ -99,7 +115,7 @@ class home:
         self.passw_entt.place(x = 80 , y = 219)
 
         # self.baz_image = PhotoImage(file = 'img/login_back.png')
-        self.baste_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/baste.png')
+        self.baste_image = PhotoImage(file = 'img/baste.png')
         self.eye = Button(loginn,image = self.baste_image ,relief="flat" , bg = "#495057",activebackground = '#495057')
         self.eye.place(x = 35 , y = 219)
 
@@ -133,12 +149,6 @@ class home:
         self.cur = self.con.cursor()
         self.data=(self.name_v,self.last_v,self.user_v,self.passw_v)
         self.cur.execute('''CREATE TABLE IF NOT EXISTS login (name TEXT ,last TEXT,username TEXT,password TEXT)''')
-        self.cur.execute('''CREATE TABLE IF NOT EXISTS kala (id   ,name TEXT ,point INTEGER,Description TEXT
-        ,type TEXT,groupp TEXT,stock INTEGER,photoo BLOB)''')
-        self.cur.execute('''CREATE TABLE IF NOT EXISTS user (name TEXT ,last_name TEXT,code TEXT
-        ,gender TEXT,work_Pposition TEXT,photoo BLOB)''')
-        # self.cur.execute('''CREATE TABLE IF NOT EXISTS stock (name TEXT ,code TEXT,groupp TEXT
-        # ,type TEXT,number INTEGER,photoo BLOB)''')
         self.cur.execute('INSERT INTO login(name,last,username,password) VALUES(?,?,?,?)',self.data)
         self.con.commit()
 
@@ -161,10 +171,10 @@ class home:
     def hide(self,event = None):
         if self.passw_ent['show'] == '*' :
             self.passw_ent['show'] = ""
-            self.baste_image['file'] = 'D:/123/!python/Projects/anbardari/img/baz.png'
+            self.baste_image['file'] = 'img/baz.png'
         elif self.passw_ent['show'] == "" :
             self.passw_ent['show'] = '*'
-            self.baste_image['file'] = 'D:/123/!python/Projects/anbardari/img/baste.png'
+            self.baste_image['file'] = 'img/baste.png'
 
         
 #====================================================================================================================================================
@@ -176,7 +186,7 @@ class home:
         main.geometry('1200x680+550+150')
         main.title('main')
 
-        self.main_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/main_back.png')
+        self.main_image = PhotoImage(file = 'img/main_back.png')
         self.main_img = Label(main,image = self.main_image ,relief="flat")
         self.main_img.place(x = 0 , y = 0)
 
@@ -220,6 +230,9 @@ class home:
         elif stock.state() == "normal" :
             stock.state("withdrawn")
             main.state("normal")
+        elif importt.state() == "normal" :
+            importt.state("withdrawn")
+            main.state("normal")
 #====================================================================================================================================================
 #====================================================================================================================================================
 #====================================================================================================================================================
@@ -228,7 +241,7 @@ class home:
         Product.geometry('1400x900+300+50')
         Product.title('Product registration')
 
-        self.Product_registration_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/Product-registration_back.png')
+        self.Product_registration_image = PhotoImage(file = 'img/Product-registration_back.png')
         self.Product_registration_img = Label(Product,image = self.Product_registration_image ,relief="flat")
         self.Product_registration_img.place(x = 0 , y = 0)
 
@@ -279,7 +292,7 @@ class home:
         self.Product_registration_delete.place(x=450, y=815)    
         self.Product_registration_exit.place(x=1140, y=815)    
 
-        self.procuct_img = Image.open("D:/123/!python/Projects/anbardari/img/empty.png")
+        self.procuct_img = Image.open("img/empty.png")
         self.procuct_image = self.procuct_img.resize((220, 176))
         self.new_width = 220
         self.new_height = 175
@@ -482,7 +495,7 @@ class home:
         User.geometry('1400x900+300+50')
         User.title('Product registration')
 
-        self.User_registration_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/User-registration_back.png')
+        self.User_registration_image = PhotoImage(file = 'img/User-registration_back.png')
         self.User_registration_img = Label(User,image = self.User_registration_image ,relief="flat")
         self.User_registration_img.place(x = 0 , y = 0)
 
@@ -604,7 +617,7 @@ class home:
         self.UserGender_combo.set("یک گزینه را انتخاب کنید")
         self.UserWorkPosition_combo.set("یک گزینه را انتخاب کنید")
 
-        self.user_img = Image.open('D:/123/!python/Projects/anbardari/img/empty.png')
+        self.user_img = Image.open('img/empty.png')
         self.user_image = self.user_img.resize((220, 176))
         self.new_width = 220
         self.new_height = 175
@@ -696,7 +709,7 @@ class home:
         stock.geometry("1200x700+350+200")
         stock.state("withdrawn")
 
-        self.stock_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/stock_back.png')
+        self.stock_image = PhotoImage(file = 'img/stock_back.png')
         self.stock_img = Label(stock,image = self.stock_image ,relief="flat")
         self.stock_img.place(x = 0 , y = 0)
 
@@ -786,13 +799,20 @@ class home:
         #     self.lst=[]
         #     self.kala.delete('0')
         #     self.data_to_list()
+#====================================================================================================================================================
+#====================================================================================================================================================
+#====================================================================================================================================================
     def import_product(self):
         importt.geometry("1400x900+250+50")
         importt.state("withdrawn")
 
-        self.import_image = PhotoImage(file = 'D:/123/!python/Projects/anbardari/img/import_product_back.png')
+        self.import_image = PhotoImage(file = 'img/import_product_back.png')
         self.import_img = Label(importt,image = self.import_image ,relief="flat")
         self.import_img.place(x = 0 , y = 0)
+
+        self.import_home_img = PhotoImage(file = 'img/import_home_btn.png')
+        self.import_home_btn = Button(importt,bg = "#495057" , image = self.import_home_img,font = ('B Koodak' , 13),width=189 ,relief="flat" , fg = "#000000",activebackground="#495057")
+        self.import_home_btn.place(x = 75 , y = 43)
 
         self.check_img = PhotoImage(file = 'img/check_btn.png')
         self.us_code_ent = Entry(importt, bg = '#FFFFFF', width = 23 , font = ('B Koodak' , 14) , relief = 'flat' , justify = 'right',fg='#495057')
@@ -871,6 +891,8 @@ class home:
         self.us_code_btn.bind('<Button-1>',self.import_user_fill)
         self.pr_code_btn.bind('<Button-1>',self.import_prduct_fill)
         self.import_submir_btn.bind('<Button-1>',self.import_submit)
+        self.import_home_btn.bind('<Button-1>',self.to_home)
+        self.import_home_btn.bind('<Button-1>',self.to_home)
 
     def import_user_fill(self,event = None) :
         try :
@@ -945,6 +967,83 @@ class home:
         # self.UserCode_ent.delete(0,END)
         # self.UserGender_combo.set("یک گزینه را انتخاب کنید")
         # self.UserWorkPosition_combo.set("یک گزینه را انتخاب کنید")
+#====================================================================================================================================================
+#====================================================================================================================================================
+#====================================================================================================================================================
+    def purchase_request(self) :
+        purchase.geometry("1200x800+250+50")
+        purchase.state("withdrawn")
+
+        self.purchase_image = PhotoImage(file = 'img/purchase_back.png')
+        self.purchase_img = Label(purchase,image = self.purchase_image ,relief="flat")
+        self.purchase_img.place(x = 0 , y = 0)
+
+        self.purchase_table = ttk.Treeview(purchase,show='headings',height=13)
+        self.purchase_table['columns']=('point','number','type','group','code','name','row')
+        self.purchase_table.column('#0',width=0,stretch=NO)
+        self.purchase_table.column('point',width=150,anchor=E)
+        self.purchase_table.column('number',width=150,anchor=E)
+        self.purchase_table.column('type',width=150,anchor=E)
+        self.purchase_table.column('group',width=150,anchor=E)
+        self.purchase_table.column('code',width=150,anchor=E)
+        self.purchase_table.column('name',width=150,anchor=E)
+        self.purchase_table.column('row',width=150,anchor=E)
+        self.purchase_table.heading('#0',text='',anchor=E)
+        self.purchase_table.heading('point',text='نقطه خرید',anchor=E)
+        self.purchase_table.heading('number',text='تعداد',anchor=E)
+        self.purchase_table.heading('type',text='نوع کالا',anchor=E)
+        self.purchase_table.heading('group',text='گروه کالا',anchor=E)
+        self.purchase_table.heading('code',text='کد کالا',anchor=E)
+        self.purchase_table.heading('name',text='نام کالا',anchor=E)
+        self.purchase_table.heading('row',text='ردیف',anchor=E)
+        ttk.Style().theme_use('clam')
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
+        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
+        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        
+        self.purchase_table.place(x = 75 , y = 155)
+
+        self.purchase_home_img = PhotoImage(file = 'img/home_btn.png')
+        self.purchase_home_btn = Button(purchase,bg = "#FFFFFF" , image = self.purchase_home_img,font = ('B Koodak' , 13),width=230 ,relief="flat" , fg = "#000000",activebackground="#FFFFFF")
+        self.purchase_home_btn.place(x = 919 , y = 724)
+        
+        self.purchase_order_img = PhotoImage(file = 'img/order_btn.png')
+        self.purchase_order_btn = Button(purchase,bg = "#FFFFFF" , image = self.purchase_order_img,font = ('B Koodak' , 13),width=187 ,relief="flat" , fg = "#000000",activebackground="#FFFFFF")
+        self.purchase_order_btn.place(x = 50 , y = 722)
+
+        self.purchase_home_btn.bind('<Button-1>',self.to_home)
+        self.purchase_order_btn.bind('<Button-1>',self.purchase_order)
+        self.purchase_table.bind('<Button-1>',self.purchase_select)
+        self.purchase_table.bind('<ButtonRelease>',self.purchase_select)
+
+    def data_to_purchase_table(self) :
+        self.purchase_lst = []
+        self.purchase_count=0
+        self.con=sql.connect('mydb.db')
+        self.cur=self.con.cursor()
+        self.row=self.cur.execute('SELECT * FROM kala')
+        for i in self.row :
+            self.purchase_lst.append(i)
+        for i in self.purchase_lst:
+            if int(i[2]) > int(i[6]) :
+                self.purchase_table.insert(parent='',index='end',iid=self.purchase_count,text='',
+                values=(i[2],i[6],i[4],i[5],i[0],i[1],str(self.purchase_count+1)))
+                self.purchase_count += 1
+    def purchase_order(self,event = None) :
+        importt.state("normal")
+        con = sql.connect('mydb.db')
+        cur = con.cursor()
+        self.import_product_data = cur.execute('SELECT * FROM kala WHERE id="{}"'.format(self.purchase_values[4]))
+        self.import_product_data = list(self.import_product_data)
+        self.minimum_number = int(self.import_product_data[0][2]) - int(self.import_product_data[0][6])
+        self.number_ent.insert(0,self.minimum_number)
+        self.pr_code_ent.insert(0,self.purchase_values[4])
+        self.import_prduct_fill()
+    def purchase_select(self, event = None) :
+        self.purchase_selected = self.purchase_table.focus()
+        self.purchase_values = self.purchase_table.item(self.purchase_selected , "values")
+
 asd = home(main)
 main.mainloop()
 
