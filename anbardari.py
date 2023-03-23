@@ -1104,33 +1104,41 @@ class home:
 
         self.departure_number_lbl = Label(departure,text = "تعداد",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
         self.departure_number_ent = Entry(departure, bg = '#FFFFFF', width = 20 , font = ('B Koodak' , 13) , relief = 'flat' , justify = 'right',fg='#495057')
-        self.departure_number_lbl.place(x = 179, y = 146)
-        self.departure_number_ent.place(x = 113, y = 192)
+        self.departure_number_lbl.place(x = 179, y = 145)
+        self.departure_number_ent.place(x = 113, y = 181)
         self.departure_date_lbl = Label(departure,text = "تاریخ",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
         self.departure_date_ent = Entry(departure, bg = '#FFFFFF', width = 20 , font = ('B Koodak' , 13) , relief = 'flat' , justify = 'right',fg='#495057')
-        self.departure_date_lbl.place(x = 179, y = 245)
-        self.departure_date_ent.place(x = 113, y = 292)
+        self.departure_date_lbl.place(x = 179, y = 220)
+        self.departure_date_ent.place(x = 113, y = 259)
+        self.departure_code_lbl = Label(departure,text = "کد سفارش",font = ('B Koodak' , 18),bg = '#DEE2E6',fg = '#707070')
+        self.departure_code_ent = Entry(departure, bg = '#FFFFFF', width = 20 , font = ('B Koodak' , 13) , relief = 'flat' , justify = 'right',fg='#495057')
+        self.departure_code_lbl.place(x = 159, y = 298)
+        self.departure_code_ent.place(x = 113, y = 337)
         self.departure_submit_img = PhotoImage(file = 'img/import_submit.png')
         self.departure_submit_btn = Button(departure,bg = "#DEE2E6" , image = self.import_submir_img,font = ('B Koodak' , 13),width=138 ,relief="flat" , fg = "#000000")
-        self.departure_submit_btn.place(x = 131, y = 368)
+        self.departure_submit_btn.place(x = 134, y = 379)
 
         self.departure_table = ttk.Treeview(departure,show='headings',height=6)
-        self.departure_table['columns']=('date','number','type','group','user_name','product_name','row')
+        self.departure_table['columns']=('situation','date','number','type','group','user_name','product_name','departure_code','row')
         self.departure_table.column('#0',width=0,stretch=NO)
-        self.departure_table.column('date',width=210,anchor=E)
-        self.departure_table.column('number',width=210,anchor=E)
-        self.departure_table.column('type',width=210,anchor=E)
-        self.departure_table.column('group',width=210,anchor=E)
-        self.departure_table.column('user_name',width=210,anchor=E)
-        self.departure_table.column('product_name',width=210,anchor=E)
-        self.departure_table.column('row',width=100,anchor=E)
+        self.departure_table.column('situation',width=160,anchor=E)
+        self.departure_table.column('date',width=160,anchor=E)
+        self.departure_table.column('number',width=160,anchor=E)
+        self.departure_table.column('type',width=160,anchor=E)
+        self.departure_table.column('group',width=160,anchor=E)
+        self.departure_table.column('user_name',width=160,anchor=E)
+        self.departure_table.column('product_name',width=160,anchor=E)
+        self.departure_table.column('departure_code',width=160,anchor=E)
+        self.departure_table.column('row',width=70,anchor=E)
         self.departure_table.heading('#0',text='',anchor=E)
+        self.departure_table.heading('situation',text='وضعیت',anchor=E)
         self.departure_table.heading('date',text='تاریخ',anchor=E)
         self.departure_table.heading('number',text='تعداد',anchor=E)
         self.departure_table.heading('type',text='نوع کالا',anchor=E)
         self.departure_table.heading('group',text='گروه کالا',anchor=E)
         self.departure_table.heading('user_name',text='نام و نام خانوادگی',anchor=E)
         self.departure_table.heading('product_name',text='نام کالا',anchor=E)
+        self.departure_table.heading('departure_code',text='کد',anchor=E)
         self.departure_table.heading('row',text='ردیف',anchor=E)
         ttk.Style().theme_use('clam')
         ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
@@ -1140,9 +1148,20 @@ class home:
         
         self.departure_table.place(x = 75 , y = 500)
 
+        self.departure_change_situation_image = PhotoImage(file = 'img/change_situation_btn.png')
+        self.departure_change_situation_btn = Button(departure,bg = "#FFFFFF" , image = self.departure_change_situation_image,font = ('B Koodak' , 13),width=230 ,relief="flat" , fg = "#000000")
+        self.departure_change_situation_btn.place(x = 51 , y = 815)
+
+        self.departure_home_image = PhotoImage(file = 'img/home_btn.png')
+        self.departure_home_btn = Button(departure,bg = "#FFFFFF" , image = self.departure_home_image,font = ('B Koodak' , 13),width=230 ,relief="flat" , fg = "#000000")
+        self.departure_home_btn.place(x = 1219 , y = 815)
+
         self.departure_us_code_btn.bind('<Button-1>',self.departure_user_fill)
         self.departure_pr_code_btn.bind('<Button-1>',self.departure_prduct_fill)
         self.departure_submit_btn.bind('<Button-1>',self.departure_submit)
+        self.departure_table.bind('<Button-1>',self.departure_select)
+        self.departure_table.bind('<ButtonRelease>',self.departure_select)
+        self.departure_change_situation_btn.bind('<Button-1>',self.change_situation)
         # self.departure_home_btn.bind('<Button-1>',self.to_home)
         # self.departure_home_btn.bind('<Button-1>',self.to_home)
 
@@ -1174,25 +1193,19 @@ class home:
     def departure_submit(self,event = None) :
         self.departure_number = self.departure_number_ent.get()
         self.departure_date = self.departure_date_ent.get()
+        self.departure_code = self.departure_code_ent.get()
         # self.import_count = 0
         self.con=sql.connect('mydb.db')
         self.cur=self.con.cursor()
         self.departure_fullname = self.departure_user_data[0][0] + " " + self.departure_user_data[0][1]
-        self.data=(self.departure_pr_name['text'],self.departure_fullname,self.departure_pr_group['text'],self.departure_pr_type['text'],self.departure_number,self.departure_date)
-        self.cur.execute('''CREATE TABLE IF NOT EXISTS departure (product_name TEXT ,user_name TEXT,groupp TEXT
-        ,type TEXT,stock INTEGER,date TEXT)''')
-        self.cur.execute('INSERT INTO departure(product_name,user_name,groupp,type,stock,date) VALUES(?,?,?,?,?,?)',self.data)
+        self.departure_data=(self.departure_code ,self.departure_pr_name['text'],self.departure_product_code,self.departure_fullname,self.departure_user_code,self.departure_pr_group['text'],self.departure_pr_type['text'],self.departure_number,self.departure_date,"در حال بررسی")
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS departure (departure_code TEXT , product_name TEXT,product_code TEXT,user_name TEXT,user_code TEXT,groupp TEXT
+        ,type TEXT,stock INTEGER,date TEXT,situation TEXT)''')
+        self.cur.execute('INSERT INTO departure(departure_code,product_name,product_code,user_name,user_code,groupp,type,stock,date,situation) VALUES(?,?,?,?,?,?,?,?,?,?)',self.departure_data)
         self.con.commit()
-        self.departure_table.insert(parent = '',index = 'end',text = 'parent',values = (self.departure_date,self.departure_number,self.departure_pr_type['text'],self.departure_pr_group['text'],self.departure_fullname,self.departure_pr_name['text'],self.departure_count+1))
+        self.departure_table.insert(parent = '',index = 'end',text = 'parent',values = ("در حال بررسی",self.departure_date,self.departure_number,self.departure_pr_type['text'],self.departure_pr_group['text'],self.departure_fullname,self.departure_pr_name['text'],self.departure_code,self.departure_count+1))
         con = sql.connect('mydb.db')
         cur = con.cursor()
-        self.departure_edit_stock = cur.execute('SELECT stock FROM kala WHERE id="{}"'.format(self.departure_product_code))
-        self.departure_edit_stock = list(self.departure_edit_stock)
-        self.departure_new_stock = int(self.departure_edit_stock[0][0]) - int(self.departure_number)
-        print(self.departure_new_stock)
-        command = ' UPDATE kala SET stock = {} WHERE id="{}" '.format(self.departure_new_stock,self.departure_product_code)    
-        cur.execute(command)    
-        con.commit()
         self.departure_us_name['text'] = ""
         self.departure_us_last['text'] = ""
         self.departure_us_gender['text'] = ""
@@ -1204,6 +1217,7 @@ class home:
         self.departure_pr_code_ent.delete(0,END)
         self.departure_number_ent.delete(0,END)
         self.departure_date_ent.delete(0,END)
+        self.departure_code_ent.delete(0,END)
     def data_to_departure_table(self):
         self.departure_lst = []
         self.departure_count=0
@@ -1214,8 +1228,35 @@ class home:
             self.departure_lst.append(i)
         for i in self.departure_lst:
             self.departure_table.insert(parent='',index='end',iid=self.departure_count,text='',
-            values=(i[5],i[4],i[3],i[2],i[1],i[0],str(self.departure_count+1)))
+            values=(i[9],i[8],i[7],i[6],i[5],i[3],i[1],i[0],str(self.departure_count+1)))
             self.departure_count += 1
+    def departure_select(self, event = None) :
+        self.departure_selected = self.departure_table.focus()
+        self.departure_values = self.departure_table.item(self.departure_selected , "values")
+        # print(self.departure_values[7])
+    def change_situation(self, event = None) :
+        con = sql.connect('mydb.db')
+        cur = con.cursor()
+        self.departure_situation_data = cur.execute('SELECT * FROM departure WHERE departure_code="{}"'.format(self.departure_values[7]))
+        self.departure_situation_data = list(self.departure_situation_data)
+        # print(self.departure_values[0])
+
+        if self.departure_situation_data[0][9] == "در حال بررسی" :
+            self.departure_situation = "آماده تحویل"
+        elif self.departure_situation_data[0][9] == "آماده تحویل" :
+            self.departure_situation = "تحویل داده شده"
+            self.departure_edit_stock = cur.execute('SELECT stock FROM kala WHERE id="{}"'.format(self.departure_situation_data[0][2]))
+            self.departure_edit_stock = list(self.departure_edit_stock)
+            self.departure_new_stock = int(self.departure_edit_stock[0][0]) - int((self.departure_situation_data[0][7]))
+            print(self.departure_new_stock)
+            command = ' UPDATE kala SET stock = {} WHERE id="{}" '.format(self.departure_new_stock,self.departure_situation_data[0][2])    
+            cur.execute(command)    
+            con.commit()
+        command = ' UPDATE departure SET situation = "{}"  WHERE departure_code="{}" '.format(self.departure_situation,self.departure_values[7])    
+        cur.execute(command)    
+        con.commit()
+        self.departure_table.item(self.departure_selected ,values = (self.departure_situation,self.departure_values[1],self.departure_values[2],self.departure_values[3],self.departure_values[4],self.departure_values[5],self.departure_values[6],self.departure_values[7],self.departure_values[8])) 
+
 asd = home(main)
 main.mainloop()
 
