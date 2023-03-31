@@ -1,4 +1,6 @@
 import sqlite3 as sql
+import pandas as pd
+from matplotlib import pyplot as plt
 from tkinter import * 
 from tkinter import ttk
 from tkinter import filedialog
@@ -7,8 +9,7 @@ import io
 from tkinter import messagebox  
 from tkcalendar import Calendar, DateEntry
 import time
-
-
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg  # important
 main = Tk()
 registration = Toplevel()
 loginn = Toplevel()
@@ -18,6 +19,10 @@ stock = Toplevel()
 importt = Toplevel()
 purchase = Toplevel()
 departure = Toplevel()
+history = Toplevel()
+bill_main = Toplevel()
+bill_detail = Toplevel()
+bill = Toplevel()
 class home:
     def __init__(self,event = None) :
         self.create_tables()
@@ -30,23 +35,37 @@ class home:
         self.import_product()
         self.purchase_request()
         self.departure_product()
+        self.order_history()
+        self.billing()
+        self.bill_detaill()
+        self.show_bill()
+        # self.order_history()
         # self.check()
         self.timeout = False
         self.kalalst = []
         self.kalaid = ""
         self.valuelst = []
+        self.his_lst = []
         self.count = 0
         self.purchase_count = 0
+        self.bill_count = 0
         self.departure_count = 0
         self.stocklst = []
-        importt.state("normal")
-        # departure.state("normal")
+        self.his_lst = []
+    
+
+
+        history.state("normal")
+        # importt.state("normal")
         self.data_to_treeview()
         self.user_data_to_table()
         self.data_to_stock()
         self.data_to_import_table()
         self.data_to_purchase_table()
         self.data_to_departure_table()
+        self.history_table_by_Date()
+        self.data_to_bill_main()
+        # self.data_to_detail_bill()
 #====================================================================================================================================================
 #====================================================================================================================================================
 #====================================================================================================================================================
@@ -710,8 +729,8 @@ class home:
 #====================================================================================================================================================
 #====================================================================================================================================================
     def warehouse_stock(self) :
-        stock.geometry("1200x700+350+200")
         stock.state("withdrawn")
+        stock.geometry("1200x700+350+200")
 
         self.stock_image = PhotoImage(file = 'img/stock_back.png')
         self.stock_img = Label(stock,image = self.stock_image ,relief="flat")
@@ -806,8 +825,8 @@ class home:
 #====================================================================================================================================================
 #====================================================================================================================================================
     def import_product(self):
-        importt.geometry("1400x900+250+50")
         importt.state("withdrawn")
+        importt.geometry("1400x900+250+50")
 
         self.import_image = PhotoImage(file = 'img/import_product_back.png')
         self.import_img = Label(importt,image = self.import_image ,relief="flat")
@@ -927,26 +946,24 @@ class home:
         self.pr_type['text']='{: ^20}'.format(self.import_product_data[0][4])
         self.pr_group['text']='{: ^20}'.format(self.import_product_data[0][5])
     def import_submit(self,event = None) :
+        self.con = sql.connect('mydb.db')
+        self.cur = self.con.cursor()
         self.import_number = self.number_ent.get()
         self.import_date = self.date_cal.get()
         self.import_order = self.import_order_code_ent.get()
         # self.import_count = 0
-        self.con=sql.connect('mydb.db')
-        self.cur=self.con.cursor()
+        self.import_table.insert(parent = '',index = 'end',text = 'parent',values = (self.import_date,self.import_number,self.pr_type['text'],self.pr_group['text'],self.us_name['text'],self.pr_name['text'],self.import_count+1))
+        self.edit_stck = self.cur.execute('SELECT stock FROM kala WHERE id="{}"'.format(self.import_product_code))
+        self.edit_stck = list(self.edit_stck)
+        self.new_stock = int(self.edit_stck[0][0]) + int(self.import_number)
+        command = ' UPDATE kala SET stock = {} WHERE id="{}" '.format(self.new_stock,self.import_product_code)    
+
         self.import_history_data=(self.import_order ,self.pr_name['text'],self.import_product_code,self.pr_group['text'],self.pr_type['text'],self.import_product_data[0][6],self.us_name['text'],self.import_user_code,self.us_gender['text'],self.import_number,self.import_date,"کالا وارد شد")
         self.cur.execute('''CREATE TABLE IF NOT EXISTS history (order_code TEXT , product_name TEXT,product_code TEXT,groupp TEXT
         ,type TEXT,stock INTEGER,user_name TEXT,user_code TEXT,user_gender TEXT,number TEXT,date TEXT,situation TEXT)''')
         self.cur.execute('INSERT INTO history(order_code,product_name,product_code,groupp,type ,stock,user_name,user_code,user_gender,number,date,situation) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',self.import_history_data)
+        self.cur.execute(command)    
         self.con.commit()
-        self.import_table.insert(parent = '',index = 'end',text = 'parent',values = (self.import_date,self.import_number,self.pr_type['text'],self.pr_group['text'],self.us_name['text'],self.pr_name['text'],self.import_count+1))
-        con = sql.connect('mydb.db')
-        cur = con.cursor()
-        self.edit_stck = cur.execute('SELECT stock FROM kala WHERE id="{}"'.format(self.import_product_code))
-        self.edit_stck = list(self.edit_stck)
-        self.new_stock = int(self.edit_stck[0][0]) + int(self.import_number)
-        command = ' UPDATE kala SET stock = {} WHERE id="{}" '.format(self.new_stock,self.import_product_code)    
-        cur.execute(command)    
-        con.commit()
         self.us_name['text'] = ""
         self.us_gender['text'] = ""
         self.pr_name['text'] = ""
@@ -978,8 +995,8 @@ class home:
 #====================================================================================================================================================
 #====================================================================================================================================================
     def purchase_request(self) :
-        purchase.geometry("1200x800+250+50")
         purchase.state("withdrawn")
+        purchase.geometry("1200x800+250+50")
 
         self.purchase_image = PhotoImage(file = 'img/purchase_back.png')
         self.purchase_img = Label(purchase,image = self.purchase_image ,relief="flat")
@@ -1054,8 +1071,8 @@ class home:
 #====================================================================================================================================================
 #====================================================================================================================================================
     def departure_product(self) :
-        departure.geometry("1500x900+250+50")
         departure.state("withdrawn")
+        departure.geometry("1500x900+250+50")
 
         self.departure_image = PhotoImage(file = 'img/departure_back.png')
         self.departure_img = Label(departure,image = self.departure_image ,relief="flat")
@@ -1306,7 +1323,282 @@ class home:
 #====================================================================================================================================================
 #====================================================================================================================================================
     def order_history(self) :
-        pass
+        history.state("withdraw")
+        history.geometry("1200x800+700+60")
+
+        self.history_image = PhotoImage(file = 'img/history_back.png')
+        self.history_img = Label(history,image = self.history_image ,relief="flat")
+        self.history_img.place(x = 0 , y = 0)
+
+        self.history_table = ttk.Treeview(history,show='headings',height=13)
+        self.history_table['columns']=('point','type','group','code','name','row')
+        self.history_table.column('#0',width=0,stretch=NO)
+        self.history_table.column('point',width=175,anchor=E)
+        # self.history_table.column('number',width=150,anchor=E)
+        self.history_table.column('type',width=175,anchor=E)
+        self.history_table.column('group',width=175,anchor=E)
+        self.history_table.column('code',width=175,anchor=E)
+        self.history_table.column('name',width=175,anchor=E)
+        self.history_table.column('row',width=175,anchor=E)
+        self.history_table.heading('#0',text='',anchor=E)
+        self.history_table.heading('point',text='نقطه خرید',anchor=E)
+        # self.history_table.heading('number',text='تعداد',anchor=E)
+        self.history_table.heading('type',text='نوع کالا',anchor=E)
+        self.history_table.heading('group',text='گروه کالا',anchor=E)
+        self.history_table.heading('code',text='کد کالا',anchor=E)
+        self.history_table.heading('name',text='نام کالا',anchor=E)
+        self.history_table.heading('row',text='ردیف',anchor=E)
+        ttk.Style().theme_use('clam')
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
+        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
+        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        
+        self.history_table.place(x = 75 , y = 155)
+
+        self.history_show_image = PhotoImage(file = 'img/show_btn.png')
+        self.history_show_btn = Button(history,bg = "#FFFFFF" , image = self.history_show_image,font = ('B Koodak' , 13),width=200 ,relief="flat" , fg = "#000000")
+        self.history_show_btn.place(x = 50 , y = 722)
+        
+        self.history_table.bind('<Button-1>',self.history_select)
+        self.history_table.bind('<ButtonRelease>',self.history_select)
+        self.history_show_btn.bind('<Button-1>',self.history_show)
+    def history_table_by_Date(self) :
+        con = sql.connect('mydb.db')
+        cur = con.cursor() 
+
+        row =cur.execute('SELECT * FROM kala')
+        self.his_lst = []
+        for i in row :
+            self.his_lst.append(i)
+        for i in self.his_lst:
+            self.history_table.insert(parent='',index='end',iid=self.count,text='',
+            values=(i[2],i[4],i[5],i[0],i[1],str(self.count+1)))
+            self.count += 1
+        self.history_df = pd.read_sql_query("SELECT * FROM history ORDER BY date DESC",con)
+        
+    def history_select(self,event = None) :
+        self.history_selected = self.history_table.focus()
+        self.history_values = self.history_table.item(self.history_selected , "values")
+    def history_show(self,event = None) :
+
+        self.history_df = self.history_df[(self.history_df['product_code'] == self.history_values[3])] 
+        self.history_df = self.history_df.filter(items = ["stock","date"])
+        self.x = self.history_df["date"].tolist()
+        self.y = self.history_df["stock"].tolist()
+
+        fig = plt.figure(figsize  = (15,5))
+        plt.plot(self.x,self.y , color = 'b' ,
+            linewidth = 1 , 
+            linestyle = '--' , 
+            marker = 'o',
+            markersize = 8 , 
+            markerfacecolor = 'lightblue',
+            markeredgecolor = 'brown',
+            markeredgewidth = 1   
+        )
+        # plt.title('my first plot $y=x^2$' , fontsize = 16 , color = 'black',loc = 'left')# right - center
+        # plt.xlabel('X' , fontsize = 12 , loc = 'center' ,color = 'black')
+        # plt.ylabel('$y=x^2$' , fontsize = 12 , loc = 'center' ,color = 'black')
+
+        # plt.xticks(self.x,['a','b','c','d','e','f'] , color = 'black' , fontsize = 12)
+
+
+        plt.grid(which = 'both' ,color = 'grey' ,linestyle = '-.' ,linewidth = 0.5)
+
+        plt.show()
+
+
+        self.frm  = LabelFrame(history , text = 'Plot' , padx = 5 , pady = 10)
+        self.frm.place(x = 0 , y = 0)
+        bar = FigureCanvasTkAgg(fig,self.frm)
+        bar.get_tk_widget().pack(side = LEFT , fill = BOTH)
+#====================================================================================================================================================
+#====================================================================================================================================================
+#====================================================================================================================================================
+    def billing(self) :
+        bill_main.state("withdrawn")
+        bill_main.geometry("1200x800+360+140")
+        bill_main.title("asdsd")
+        self.bill_image = PhotoImage(file = 'img/bill_back.png')
+        self.bill_img = Label(bill_main,image = self.bill_image ,relief="flat")
+        self.bill_img.place(x = 0 , y = 0)
+
+        self.bill_table = ttk.Treeview(bill_main,show='headings',height=13)
+        self.bill_table['columns']=('point','type','group','code','name','row')
+        self.bill_table.column('#0',width=0,stretch=NO)
+        self.bill_table.column('point',width=175,anchor=E)
+        # self.bill_table.column('number',width=150,anchor=E)
+        self.bill_table.column('type',width=175,anchor=E)
+        self.bill_table.column('group',width=175,anchor=E)
+        self.bill_table.column('code',width=175,anchor=E)
+        self.bill_table.column('name',width=175,anchor=E)
+        self.bill_table.column('row',width=175,anchor=E)
+        self.bill_table.heading('#0',text='',anchor=E)
+        self.bill_table.heading('point',text='نقطه خرید',anchor=E)
+        # self.bill_table.heading('number',text='تعداد',anchor=E)
+        self.bill_table.heading('type',text='نوع کالا',anchor=E)
+        self.bill_table.heading('group',text='گروه کالا',anchor=E)
+        self.bill_table.heading('code',text='کد کالا',anchor=E)
+        self.bill_table.heading('name',text='نام کالا',anchor=E)
+        self.bill_table.heading('row',text='ردیف',anchor=E)
+        ttk.Style().theme_use('clam')
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
+        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
+        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        
+        self.bill_table.place(x = 75 , y = 155)
+
+        self.bill_show_image = PhotoImage(file = 'img/bill_show_btn.png')
+        self.bill_show_btn = Button(bill_main,bg = "#FFFFFF" , image = self.bill_show_image,font = ('B Koodak' , 13),width=200 ,relief="flat" , fg = "#000000")
+        self.bill_show_btn.place(x = 35 , y = 722)
+        
+        self.bill_table.bind('<Button-1>',self.bill_main_select)
+        self.bill_table.bind('<ButtonRelease>',self.bill_main_select)
+        self.bill_show_btn.bind('<Button-1>',self.Mbill_to_Dbill)
+    def data_to_bill_main(self) :
+        self.bill_count = 0
+        con = sql.connect('mydb.db')
+        cur = con.cursor() 
+
+        row =cur.execute('SELECT * FROM kala')
+        self.Mbill_lst = []
+        for i in row :
+            self.Mbill_lst.append(i)
+        for i in self.Mbill_lst:
+            self.bill_table.insert(parent='',index='end',iid=self.bill_count,text='',
+            values=(i[2],i[4],i[5],i[0],i[1],str(self.bill_count+1)))
+            self.bill_count += 1
+        # self.bill_df = pd.read_sql_query("SELECT * FROM history ORDER BY date DESC",con)
+    def bill_main_select(self,event = None) :
+        self.bill_selected = self.bill_table.focus()
+        self.bill_values = self.bill_table.item(self.bill_selected , "values")
+        # self.bill_detail_df = self.bill_df[(self.bill_df['product_code'] == self.bill_values[3])]
+        # print(self.bill_detail_df)
+    def Mbill_to_Dbill(self,event = None) :
+        bill_detail.state("normal")
+        bill_main.state("withdrawn")
+        self.data_to_detail_bill()
+
+
+
+    def bill_detaill(self) :
+        bill_detail.state("withdrawn")
+        bill_detail.geometry("1200x800+360+140")
+
+        self.bill_detail_image = PhotoImage(file = 'img/bill_back.png')
+        self.bill_detail_img = Label(bill_detail,image = self.bill_detail_image ,relief="flat")
+        self.bill_detail_img.place(x = 0 , y = 0)
+
+        self.bill_detail_table = ttk.Treeview(bill_detail,show='headings',height=13)
+        self.bill_detail_table['columns']=('situation','number','user_name','prodoct_name','date','order_code','row')
+        self.bill_detail_table.column('#0',width=0,stretch=NO)
+        self.bill_detail_table.column('situation',width=160,anchor=E)
+        self.bill_detail_table.column('number',width=160,anchor=E)
+        self.bill_detail_table.column('user_name',width=160,anchor=E)
+        self.bill_detail_table.column('prodoct_name',width=160,anchor=E)
+        self.bill_detail_table.column('date',width=160,anchor=E)
+        self.bill_detail_table.column('order_code',width=160,anchor=E)
+        self.bill_detail_table.column('row',width=90,anchor=E)
+        self.bill_detail_table.heading('#0',text='',anchor=E)
+        self.bill_detail_table.heading('situation',text='وضعیت',anchor=E)
+        self.bill_detail_table.heading('number',text='تعداد',anchor=E)
+        self.bill_detail_table.heading('user_name',text='نام شخص',anchor=E)
+        self.bill_detail_table.heading('prodoct_name',text='نام کالا',anchor=E)
+        self.bill_detail_table.heading('date',text='تاریخ',anchor=E)
+        self.bill_detail_table.heading('order_code',text='شماره سفارش',anchor=E)
+        self.bill_detail_table.heading('row',text='ردیف',anchor=E)
+        ttk.Style().theme_use('clam')
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
+        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
+        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        
+        self.bill_detail_table.place(x = 75 , y = 155)
+        
+        self.Dbill_show_image = PhotoImage(file = 'img/bill_show_btn.png')
+        self.Dbill_show_btn = Button(bill_detail,bg = "#FFFFFF" , image = self.Dbill_show_image,font = ('B Koodak' , 13),width=200 ,relief="flat" , fg = "#000000")
+        self.Dbill_show_btn.place(x = 35 , y = 722)
+
+        self.bill_detail_table.bind('<Button-1>',self.bill_detail_select)
+        self.bill_detail_table.bind('<ButtonRelease>',self.bill_detail_select)
+        self.Dbill_show_btn.bind('<Button-1>',self.fill_bill)
+    def data_to_detail_bill(self) :
+        self.bill_count = 0
+        con = sql.connect('mydb.db')
+        cur = con.cursor() 
+        query = "SELECT * FROM history WHERE product_code = '{}'".format(self.bill_values[3])
+        result = cur.execute(query).fetchall()
+        for i in result:
+            self.bill_detail_table.insert(parent='',index='end',iid=self.bill_count,text='',
+            values=(i[11],i[9],i[6],i[1],i[10],i[0],str(self.bill_count+1)))
+            self.bill_count += 1
+    def bill_detail_select(self,event = None) :
+        self.bill_detail_selected = self.bill_detail_table.focus()
+        self.bill_detail_values = self.bill_detail_table.item(self.bill_detail_selected , "values")
+    def show_bill(self,event = None) :
+        bill.state("withdrawn")
+        bill.geometry("1200x730+360+140") 
+
+        self.bill_main_image = PhotoImage(file = 'img/billl_back.png')
+        self.bill_main_img = Label(bill,image = self.bill_main_image ,relief="flat")
+        self.bill_main_img.place(x = 0 , y = 0)
+
+        self.bill_order_code_lbl = Label(bill,text = ": کد سفارش",font = ('B Koodak' , 20),bg = '#495057',fg = '#DEE2E6')
+        self.bill_product_code_lbl = Label(bill,text = ": کد محصول",font = ('B Koodak' , 20),bg = '#495057',fg = '#DEE2E6')
+        self.bill_product_name_lbl = Label(bill,text = ": نام محصول",font = ('B Koodak' , 20),bg = '#495057',fg = '#DEE2E6')
+        self.bill_situation_lbl = Label(bill,text = ": وضعیت",font = ('B Koodak' , 20),bg = '#495057',fg = '#DEE2E6')
+        self.bill_user_name_lbl = Label(bill,text = ": نام",font = ('B Koodak' , 20),bg = '#495057',fg = '#DEE2E6')
+        self.bill_user_code_lbl = Label(bill,text = ": کد ملی",font = ('B Koodak' , 20),bg = '#495057',fg = '#DEE2E6')
+        self.bill_order_code_lbl.place(x = 969, y = 170)
+        self.bill_product_code_lbl.place(x = 969, y = 258)
+        self.bill_product_name_lbl.place(x = 969, y = 346)
+        self.bill_situation_lbl.place(x = 519, y = 170)
+        self.bill_user_name_lbl.place(x = 519, y = 258)
+        self.bill_user_code_lbl.place(x = 519, y = 346)
+        self.bill_date_lbl = Label(bill,text = ": تاریخ",font = ('B Koodak' , 15),bg = '#343A40',fg = '#DEE2E6')
+        self.bill_number_lbl = Label(bill,text = ": تعداد",font = ('B Koodak' , 15),bg = '#343A40',fg = '#DEE2E6')
+        self.bill_stock_lbl = Label(bill,text = ": موجودی",font = ('B Koodak' , 25),bg = '#343A40',fg = '#DEE2E6')
+        self.bill_date_lbl.place(x = 970, y = 488)
+        self.bill_number_lbl.place(x = 444, y = 488)
+        self.bill_stock_lbl.place(x = 749, y = 565)
+
+        self.bill_order_code = Label(bill,font = ('B Koodak' , 20),bg = '#495057',fg = '#FFFFFF',width = 12)
+        self.bill_product_code = Label(bill,font = ('B Koodak' , 20),bg = '#495057',fg = '#FFFFFF',width = 12)
+        self.bill_product_name = Label(bill,font = ('B Koodak' , 20),bg = '#495057',fg = '#FFFFFF',width = 12)
+        self.bill_situation = Label(bill,font = ('B Koodak' , 20),bg = '#495057',fg = '#FFFFFF',width = 15)
+        self.bill_user_name = Label(bill,font = ('B Koodak' , 20),bg = '#495057',fg = '#FFFFFF',width = 15)
+        self.bill_user_code = Label(bill,font = ('B Koodak' , 20),bg = '#495057',fg = '#FFFFFF',width = 15)
+        self.bill_order_code.place(x = 720, y = 170)
+        self.bill_product_code.place(x = 720, y = 258)
+        self.bill_product_name.place(x = 720, y = 346)
+        self.bill_situation.place(x = 245, y = 170)
+        self.bill_user_name.place(x = 245, y = 258)
+        self.bill_user_code.place(x = 245, y = 346)
+        self.bill_date = Label(bill,font = ('B Koodak' , 15),bg = '#343A40',fg = '#DEE2E6')
+        self.bill_number = Label(bill,font = ('B Koodak' , 15),bg = '#343A40',fg = '#DEE2E6')
+        self.bill_stock = Label(bill,font = ('B Koodak' , 25),bg = '#343A40',fg = '#DEE2E6')
+        self.bill_date.place(x = 800, y = 488)
+        self.bill_number.place(x = 350, y = 488)
+        self.bill_stock.place(x = 600, y = 565)
+    def fill_bill(self,event = None) :
+        bill_detail.state("withdrawn")
+        bill.state("normal")
+        con = sql.connect('mydb.db')
+        cur = con.cursor()        
+        self.bill_select_data = cur.execute('SELECT * FROM history WHERE order_code="{}"'.format(self.bill_detail_values[5]))
+        self.bill_select_data = list(self.bill_select_data)        
+        self.bill_order_code['text']='{: ^20}'.format(self.bill_select_data[0][0])
+        self.bill_product_code['text']='{: ^20}'.format(self.bill_select_data[0][2])
+        self.bill_product_name['text']='{: ^20}'.format(self.bill_select_data[0][1])
+        self.bill_situation['text']='{: ^20}'.format(self.bill_select_data[0][11])
+        self.bill_user_name['text']='{: ^20}'.format(self.bill_select_data[0][6])
+        self.bill_user_code['text']='{: ^20}'.format(self.bill_select_data[0][7])
+        self.bill_date['text']='{: ^10}'.format(self.bill_select_data[0][10])
+        self.bill_number['text']='{: ^10}'.format(self.bill_select_data[0][9])
+        self.bill_stock['text']='{: ^10}'.format(self.bill_select_data[0][5])
+
 asd = home(main)
 main.mainloop()
 
