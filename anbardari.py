@@ -330,6 +330,12 @@ class home:
         self.number_ent.delete(0,END)
         self.date_cal.delete(0,END)
         self.import_order_code_ent.delete(0,END)
+
+        self.impo_empty_img = Image.open('img/import_empty.png')
+        self.impo_empty_image = self.impo_empty_img.resize((175, 124))
+        self.impo_empty = ImageTk.PhotoImage(self.impo_empty_image)
+        self.impo_empty_label = Label(importt, image=self.impo_empty)
+        self.impo_empty_label.place(x = 115 , y = 260)
     def purchase_to_home(self,event = None) :
         purchase.state("withdrawn")
         main.state("normal")
@@ -340,6 +346,23 @@ class home:
         main.state("normal")
         for item in self.departure_table.get_children():
             self.departure_table.delete(item)
+        self.departure_us_name['text'] = ""
+        self.departure_us_last['text'] = ""
+        self.departure_us_gender['text'] = ""
+        self.departure_pr_name['text'] = ""
+        self.departure_pr_number['text'] = ""
+        self.departure_pr_type['text'] = ""
+        self.departure_pr_group['text'] = ""
+        self.departure_us_code_ent.delete(0,END)
+        self.departure_pr_code_ent.delete(0,END)
+        self.departure_number_ent.delete(0,END)
+        self.departure_code_ent.delete(0,END)
+        self.departure_date_cal.delete(0,END)
+        self.departure_empty_img = Image.open('img/import_empty.png')
+        self.departure_empty_image = self.departure_empty_img.resize((170, 160))
+        self.departure_empty = ImageTk.PhotoImage(self.departure_empty_image)
+        self.departure_empty_label = Label(departure, image=self.departure_empty)
+        self.departure_empty_label.place(x = 367 , y = 239)
     def bill_to_home(self,event = None) :
         bill_main.state("withdrawn")
         main.state("normal")
@@ -350,6 +373,11 @@ class home:
         main.state("normal")
         for item in self.history_table.get_children():
             self.history_table.delete(item)
+    def Dbill_to_Mbill(self,event = None) :
+        bill_detail.state("withdrawn")
+        bill_main.state("normal")
+        for item in self.bill_detail_table.get_children():
+            self.bill_detail_table.delete(item)
 #====================================================================================================================================================
 #====================================================================================================================================================
 #====================================================================================================================================================
@@ -1667,6 +1695,10 @@ class home:
         
         self.bill_detail_table.place(x = 75 , y = 155)
         
+        self.Dbill_home_img = PhotoImage(file = 'img/home_btn.png')
+        self.Dbill_home_btn = Button(bill_detail,bg = "#FFFFFF" , image = self.Dbill_home_img,font = ('B Koodak' , 13),width=230 ,relief="flat" , fg = "#000000",activebackground="#FFFFFF")
+        self.Dbill_home_btn.place(x = 919 , y = 724)
+
         self.Dbill_show_image = PhotoImage(file = 'img/bill_show_btn.png')
         self.Dbill_show_btn = Button(bill_detail,bg = "#FFFFFF" , image = self.Dbill_show_image,font = ('B Koodak' , 13),width=200 ,relief="flat" , fg = "#000000")
         self.Dbill_show_btn.place(x = 35 , y = 722)
@@ -1674,6 +1706,7 @@ class home:
         self.bill_detail_table.bind('<Button-1>',self.bill_detail_select)
         self.bill_detail_table.bind('<ButtonRelease>',self.bill_detail_select)
         self.Dbill_show_btn.bind('<Button-1>',self.fill_bill)
+        self.Dbill_home_btn.bind('<Button-1>',self.Dbill_to_Mbill)
     def data_to_detail_bill(self) :
         self.bill_count = 0
         con = sql.connect('mydb.db')
