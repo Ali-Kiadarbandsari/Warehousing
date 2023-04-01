@@ -1,3 +1,7 @@
+'''
+Ali Kiadarbandsari
+2023/04/2
+'''
 import sqlite3 as sql
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -25,6 +29,19 @@ bill_detail = Toplevel()
 bill = Toplevel()
 class home:
     def __init__(self,event = None) :
+        main.state("withdrawn")
+        registration.state("withdrawn")
+        loginn.state("withdrawn")
+        Product.state("withdrawn")
+        User.state("withdrawn")
+        stock.state("withdrawn")
+        importt.state("withdrawn")
+        purchase.state("withdrawn")
+        departure.state("withdrawn")
+        history.state("withdrawn")
+        bill_main.state("withdrawn")
+        bill_detail.state("withdrawn")
+        bill.state("withdrawn")
         self.create_tables()
         self.main_page()
         self.register()
@@ -39,8 +56,10 @@ class home:
         self.billing()
         self.bill_detaill()
         self.show_bill()
-        # self.order_history()
+
+
         # self.check()
+
         self.timeout = False
         self.kalalst = []
         self.kalaid = ""
@@ -82,7 +101,7 @@ class home:
     def register(self) :
         registration.state("withdraw")
         registration.geometry('900x500+450+150')
-        registration.title('register')
+        registration.title('ثبت نام')
         self.register_image = PhotoImage(file = 'img/register_back.png')
         self.register_img = Label(registration,image = self.register_image )
         self.register_img.place(x = 0 , y = 0)
@@ -120,7 +139,7 @@ class home:
     def login(self):
         loginn.state("withdraw")
         loginn.geometry('450x550+550+150')
-        loginn.title('login')
+        loginn.title('ورود')
 
         self.login_image = PhotoImage(file = 'img/login_back.png')
         self.login_img = Label(loginn,image = self.login_image ,relief="flat")
@@ -204,7 +223,7 @@ class home:
     def main_page(self) :
         main.state("withdraw")
         main.geometry('1200x680+550+150')
-        main.title('main')
+        main.title('صفحه اصلی')
 
         self.main_image = PhotoImage(file = 'img/main_back.png')
         self.main_img = Label(main,image = self.main_image ,relief="flat")
@@ -279,6 +298,7 @@ class home:
         main.state("normal")
         for item in self.kala.get_children():
             self.kala.delete(item)
+            print(item)
         self.product_type_combo.set("یک گزینه را انتخاب کنید")
         self.product_group_combo.set("یک گزینه را انتخاب کنید")
         self.product_code_ent.delete(0,END)
@@ -384,7 +404,7 @@ class home:
     def Product_registration(self) :
         Product.state("withdraw")
         Product.geometry('1400x900+300+50')
-        Product.title('Product registration')
+        Product.title('ثبت کالای جدید')
 
         self.Product_registration_image = PhotoImage(file = 'img/Product-registration_back.png')
         self.Product_registration_img = Label(Product,image = self.Product_registration_image ,relief="flat")
@@ -468,10 +488,10 @@ class home:
         self.kala.heading('Name',text='نام کالا',anchor=E)
         self.kala.heading('row',text='ردیف',anchor=E)
         ttk.Style().theme_use('clam')
-        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
-        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#495057',foreground="white",bd=0,relief='flat')
+        ttk.Style().map("Treeview.Heading",background=[('active','#495057')])
         ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
-        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        ttk.Style().map("Treeview",background=[('selected', '#DEE2E6')],foreground=[('selected', 'black')])
         
         self.kala.place(x = 75 , y = 477)
 
@@ -603,18 +623,18 @@ class home:
         self.cur.execute('INSERT INTO kala(id,name,point,Description,type,stock,groupp,photoo) VALUES(?,?,?,?,?,?,?,?)',self.data)
         self.con.commit()
 
-        # self.stock_data=(self.name,self.code,self.group,self.type,0,self.photo)
-        # self.cur.execute('''CREATE TABLE IF NOT EXISTS stock (name TEXT ,code TEXT,groupp TEXT
-        # ,type TEXT,number INTEGER,photoo BLOB)''')
-        # self.cur.execute('INSERT INTO stock(name,code,groupp,type,number,photoo) VALUES(?,?,?,?,?,?)',self.stock_data)
-        # self.con.commit()
-
         self.product_type_combo.set("یک گزینه را انتخاب کنید")
         self.product_group_combo.set("یک گزینه را انتخاب کنید")
         self.product_code_ent.delete(0,END)
         self.product_name_ent.delete(0,END)
         self.point_purchase_ent.delete(0,END)
         self.Description_ent.delete(0,END)
+
+        self.procuct_img = Image.open("img/empty.png")
+        self.procuct_image = self.procuct_img.resize((220, 176))
+        self.product_photo = ImageTk.PhotoImage(self.procuct_image)
+        self.product_photo_label = Label(Product, image=self.product_photo, width=self.new_width, height=self.new_height)
+        self.product_photo_label.place(x=125, y=153) 
 
         self.kala.insert(parent = '',index = 'end',text = 'parent',values = (self.group,self.type,self.point,self.code,self.name,self.count+1))
     def covert_to_binary_data(self,filename):
@@ -646,7 +666,7 @@ class home:
     def User_registration(self) :
         User.state("withdraw")
         User.geometry('1400x900+300+50')
-        User.title('Product registration')
+        User.title('ثبت کاربر جدید')
 
         self.User_registration_image = PhotoImage(file = 'img/User-registration_back.png')
         self.User_registration_img = Label(User,image = self.User_registration_image ,relief="flat")
@@ -716,10 +736,11 @@ class home:
         self.user_table.heading('name',text='نام',anchor=E)
         self.user_table.heading('row',text='ردیف',anchor=E)
         ttk.Style().theme_use('clam')
-        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
-        ttk.Style().map("Treeview.Heading",background=[('active','#686A75')])
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#495057',foreground="white",bd=0,relief='flat')
+        ttk.Style().map("Treeview.Heading",background=[('active','#495057')])
         ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
-        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        ttk.Style().map("Treeview",background=[('selected', '#DEE2E6')],foreground=[('selected', 'black')])
+        
         self.user_table.place(x = 75 , y = 477)
 
         self.image_btn.bind('<Button-1>',self.user_change_image)
@@ -877,6 +898,7 @@ class home:
     def warehouse_stock(self) :
         stock.state("withdrawn")
         stock.geometry("1200x700+350+200")
+        stock.title('موجودی انبار')
 
         self.stock_image = PhotoImage(file = 'img/stock_back.png')
         self.stock_img = Label(stock,image = self.stock_image ,relief="flat")
@@ -899,10 +921,10 @@ class home:
         self.stock_table.heading('name',text='نام کالا',anchor=E)
         self.stock_table.heading('row',text='ردیف',anchor=E)
         ttk.Style().theme_use('clam')
-        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
-        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#495057',foreground="white",bd=0,relief='flat')
+        ttk.Style().map("Treeview.Heading",background=[('active','#495057')])
         ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
-        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        ttk.Style().map("Treeview",background=[('selected', '#DEE2E6')],foreground=[('selected', 'black')])
         
         self.stock_table.place(x = 75 , y = 135)
 
@@ -974,6 +996,7 @@ class home:
     def import_product(self):
         importt.state("withdrawn")
         importt.geometry("1400x900+250+50")
+        importt.title('ورود کالا')
 
         self.import_image = PhotoImage(file = 'img/import_product_back.png')
         self.import_img = Label(importt,image = self.import_image ,relief="flat")
@@ -1036,15 +1059,16 @@ class home:
         self.import_submir_btn.place(x = 116, y = 437)
 
         self.import_table = ttk.Treeview(importt,show='headings',height=6)
-        self.import_table['columns']=('date','number','type','group','user_name','product_name','row')
+        self.import_table['columns']=('date','number','type','group','user_name','product_name','order_code','row')
         self.import_table.column('#0',width=0,stretch=NO)
-        self.import_table.column('date',width=190,anchor=E)
-        self.import_table.column('number',width=190,anchor=E)
-        self.import_table.column('type',width=190,anchor=E)
-        self.import_table.column('group',width=190,anchor=E)
-        self.import_table.column('user_name',width=190,anchor=E)
-        self.import_table.column('product_name',width=190,anchor=E)
-        self.import_table.column('row',width=100,anchor=E)
+        self.import_table.column('date',width=160,anchor=E)
+        self.import_table.column('number',width=160,anchor=E)
+        self.import_table.column('type',width=160,anchor=E)
+        self.import_table.column('group',width=160,anchor=E)
+        self.import_table.column('user_name',width=160,anchor=E)
+        self.import_table.column('product_name',width=160,anchor=E)
+        self.import_table.column('order_code',width=160,anchor=E)
+        self.import_table.column('row',width=130,anchor=E)
         self.import_table.heading('#0',text='',anchor=E)
         self.import_table.heading('date',text='تاریخ',anchor=E)
         self.import_table.heading('number',text='تعداد',anchor=E)
@@ -1052,12 +1076,13 @@ class home:
         self.import_table.heading('group',text='گروه کالا',anchor=E)
         self.import_table.heading('user_name',text='نام و نام خانوادگی',anchor=E)
         self.import_table.heading('product_name',text='نام کالا',anchor=E)
+        self.import_table.heading('order_code',text='کد سفارش',anchor=E)
         self.import_table.heading('row',text='ردیف',anchor=E)
         ttk.Style().theme_use('clam')
-        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
-        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#495057',foreground="white",bd=0,relief='flat')
+        ttk.Style().map("Treeview.Heading",background=[('active','#495057')])
         ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
-        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        ttk.Style().map("Treeview",background=[('selected', '#DEE2E6')],foreground=[('selected', 'black')])
         
         self.import_table.place(x = 75 , y = 562)
 
@@ -1146,7 +1171,7 @@ class home:
             self.import_lst.append(i)
         for i in self.import_lst:
             self.import_table.insert(parent='',index='end',iid=self.import_count,text='',
-            values=(i[10],i[9],i[4],i[3],i[6],i[1],str(self.import_count+1)))
+            values=(i[10],i[9],i[4],i[3],i[6],i[1],i[0],str(self.import_count+1)))
             self.import_count += 1
         # self.UserName_ent.delete(0,END)
         # self.UserLast_ent.delete(0,END)
@@ -1159,6 +1184,7 @@ class home:
     def purchase_request(self) :
         purchase.state("withdrawn")
         purchase.geometry("1200x800+250+50")
+        purchase.title('درخواست کالا')
 
         self.purchase_image = PhotoImage(file = 'img/purchase_back.png')
         self.purchase_img = Label(purchase,image = self.purchase_image ,relief="flat")
@@ -1183,10 +1209,10 @@ class home:
         self.purchase_table.heading('name',text='نام کالا',anchor=E)
         self.purchase_table.heading('row',text='ردیف',anchor=E)
         ttk.Style().theme_use('clam')
-        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
-        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#495057',foreground="white",bd=0,relief='flat')
+        ttk.Style().map("Treeview.Heading",background=[('active','#495057')])
         ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
-        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        ttk.Style().map("Treeview",background=[('selected', '#DEE2E6')],foreground=[('selected', 'black')])
         
         self.purchase_table.place(x = 75 , y = 155)
 
@@ -1217,7 +1243,10 @@ class home:
                 values=(i[2],i[6],i[4],i[5],i[0],i[1],str(self.purchase_count+1)))
                 self.purchase_count += 1
     def purchase_order(self,event = None) :
+        purchase.state("withdrawn")
         importt.state("normal")
+        for item in self.purchase_table.get_children():
+            self.purchase_table.delete(item)
         con = sql.connect('mydb.db')
         cur = con.cursor()
         self.import_product_data = cur.execute('SELECT * FROM kala WHERE id="{}"'.format(self.purchase_values[4]))
@@ -1235,6 +1264,8 @@ class home:
     def departure_product(self) :
         departure.state("withdrawn")
         departure.geometry("1500x900+250+50")
+        departure.title('خروج کالا')
+
 
         self.departure_image = PhotoImage(file = 'img/departure_back.png')
         self.departure_img = Label(departure,image = self.departure_image ,relief="flat")
@@ -1323,10 +1354,10 @@ class home:
         self.departure_table.heading('departure_code',text='کد',anchor=E)
         self.departure_table.heading('row',text='ردیف',anchor=E)
         ttk.Style().theme_use('clam')
-        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
-        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#495057',foreground="white",bd=0,relief='flat')
+        ttk.Style().map("Treeview.Heading",background=[('active','#495057')])
         ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
-        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        ttk.Style().map("Treeview",background=[('selected', '#DEE2E6')],foreground=[('selected', 'black')])
         
         self.departure_table.place(x = 75 , y = 500)
 
@@ -1416,7 +1447,11 @@ class home:
         self.departure_count=0
         self.con=sql.connect('mydb.db')
         self.cur=self.con.cursor()
-        self.row=self.cur.execute('SELECT * FROM history')
+        self.data_departuret_command = "SELECT * FROM history WHERE situation = 'در حال بررسی' OR situation = 'آماده تحویل' OR situation = 'تحویل داده شده'"
+        # self.data_departuret_command = "SELECT * FROM history WHERE situation = '{}'".format("تحویل داده شد")
+        # self.data_departuret_command = "SELECT * FROM history WHERE situation = '{}'".format("کالا وارد شد")
+        self.row=self.cur.execute(self.data_departuret_command)
+
         for i in self.row :
             self.departure_lst.append(i)
         for i in self.departure_lst:
@@ -1493,6 +1528,7 @@ class home:
     def order_history(self) :
         history.state("withdraw")
         history.geometry("1200x800+360+100")
+        history.title('تاریخچه سفارشات')
 
         self.history_image = PhotoImage(file = 'img/history_back.png')
         self.history_img = Label(history,image = self.history_image ,relief="flat")
@@ -1517,10 +1553,10 @@ class home:
         self.history_table.heading('name',text='نام کالا',anchor=E)
         self.history_table.heading('row',text='ردیف',anchor=E)
         ttk.Style().theme_use('clam')
-        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
-        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#495057',foreground="white",bd=0,relief='flat')
+        ttk.Style().map("Treeview.Heading",background=[('active','#495057')])
         ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
-        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        ttk.Style().map("Treeview",background=[('selected', '#DEE2E6')],foreground=[('selected', 'black')])
         
         self.history_table.place(x = 75 , y = 155)
 
@@ -1548,17 +1584,19 @@ class home:
             self.history_table.insert(parent='',index='end',iid=self.count,text='',
             values=(i[2],i[4],i[5],i[0],i[1],str(self.count+1)))
             self.count += 1
-        self.history_df = pd.read_sql_query("SELECT * FROM history ORDER BY date DESC",con)
+        self.history_df = pd.read_sql_query("SELECT * FROM history",con)
         
     def history_select(self,event = None) :
         self.history_selected = self.history_table.focus()
         self.history_values = self.history_table.item(self.history_selected , "values")
     def history_show(self,event = None) :
-
-        self.history_df = self.history_df[(self.history_df['product_code'] == self.history_values[3])] 
-        self.history_df = self.history_df.filter(items = ["stock","date"])
-        self.x = self.history_df["date"].tolist()
-        self.y = self.history_df["stock"].tolist()
+        print(self.history_values[3])
+        self.plot_df = self.history_df[((self.history_df['situation'] == "تحویل داده شده") | (self.history_df['situation'] == "کالا وارد شد")) & (self.history_df['product_code'] == self.history_values[3])] 
+        self.plot_df = self.plot_df.filter(items = ["stock","date"])
+        self.plot_df['date'] = pd.to_datetime(self.plot_df['date'])
+        self.plot_df = self.plot_df.sort_values('date')
+        self.x = self.plot_df["date"].tolist()
+        self.y = self.plot_df["stock"].tolist()
 
         fig = plt.figure(figsize  = (12,7))
         plt.plot(self.x,self.y , color = 'b' ,
@@ -1592,7 +1630,7 @@ class home:
     def billing(self) :
         bill_main.state("withdrawn")
         bill_main.geometry("1200x800+360+100")
-        bill_main.title("asdsd")
+        bill_main.title("صدور قبض")
         self.bill_image = PhotoImage(file = 'img/bill_back.png')
         self.bill_img = Label(bill_main,image = self.bill_image ,relief="flat")
         self.bill_img.place(x = 0 , y = 0)
@@ -1616,10 +1654,10 @@ class home:
         self.bill_table.heading('name',text='نام کالا',anchor=E)
         self.bill_table.heading('row',text='ردیف',anchor=E)
         ttk.Style().theme_use('clam')
-        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
-        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#495057',foreground="white",bd=0,relief='flat')
+        ttk.Style().map("Treeview.Heading",background=[('active','#495057')])
         ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
-        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        ttk.Style().map("Treeview",background=[('selected', '#DEE2E6')],foreground=[('selected', 'black')])
         
         self.bill_table.place(x = 75 , y = 155)
 
@@ -1664,6 +1702,7 @@ class home:
     def bill_detaill(self) :
         bill_detail.state("withdrawn")
         bill_detail.geometry("1200x800+360+100")
+        bill_detail.title("صدور قبض")
 
         self.bill_detail_image = PhotoImage(file = 'img/bill_back.png')
         self.bill_detail_img = Label(bill_detail,image = self.bill_detail_image ,relief="flat")
@@ -1688,10 +1727,10 @@ class home:
         self.bill_detail_table.heading('order_code',text='شماره سفارش',anchor=E)
         self.bill_detail_table.heading('row',text='ردیف',anchor=E)
         ttk.Style().theme_use('clam')
-        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#474A56',foreground="white",bd=0,relief='raised')
-        ttk.Style().map("Treeview.Heading",sbackground=[('active','#686A75')])
+        ttk.Style().configure("Treeview.Heading",font=('B koodak', 18),padding=[0, 5, 15, 5],background='#495057',foreground="white",bd=0,relief='flat')
+        ttk.Style().map("Treeview.Heading",background=[('active','#495057')])
         ttk.Style().configure("Treeview", highlightthickness=0, height=150,bd=0, font=('AraFProgram', 16),background="white",foreground="black",rowheight = 35,fieldbackground="white")
-        ttk.Style().map("Treeview",background=[('selected', '#7A8BA7')],foreground=[('selected', 'white')])
+        ttk.Style().map("Treeview",background=[('selected', '#DEE2E6')],foreground=[('selected', 'black')])
         
         self.bill_detail_table.place(x = 75 , y = 155)
         
@@ -1768,6 +1807,8 @@ class home:
     def fill_bill(self,event = None) :
         bill_detail.state("withdrawn")
         bill.state("normal")
+        bill.title("صدور قبض")
+
         con = sql.connect('mydb.db')
         cur = con.cursor()        
         self.bill_select_data = cur.execute('SELECT * FROM history WHERE order_code="{}"'.format(self.bill_detail_values[5]))
