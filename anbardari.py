@@ -14,6 +14,36 @@ from tkinter import messagebox
 from tkcalendar import Calendar, DateEntry
 import time
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg 
+class INTcheck:
+    def __set_name__(self,instance,key):
+        self.key = key
+    
+    def __get__(self,instance,owner):
+        return  instance.__dict__[self.key]
+    
+    def __set__(self,instance,value):
+        if value.isdigit():
+             instance.dict[self.key]=value
+        else:
+            messagebox.showerror("error","لطفا عدد وارد کنید")  
+            
+    def __delete__(self,instance):
+        del instance.__dict__[self.key]
+class STRcheck:
+    def __set_name__(self,instance,key):
+        self.key = key
+    
+    def __get__(self,instance,owner):
+        return  instance.__dict__[self.key]
+    
+    def __set__(self,instance,value):
+        if value.isdigit():
+             instance.dict[self.key]=value
+        else:
+            messagebox.showerror("error","لطفا حروف وارد کنید")  
+            
+    def __delete__(self,instance):
+        del instance.__dict__[self.key]
 main = Tk()
 registration = Toplevel()
 loginn = Toplevel()
@@ -28,6 +58,7 @@ bill_main = Toplevel()
 bill_detail = Toplevel()
 bill = Toplevel()
 class home:
+    code = INTcheck()
     def __init__(self,event = None) :
         main.state("withdrawn")
         registration.state("withdrawn")
@@ -42,7 +73,6 @@ class home:
         bill_main.state("withdrawn")
         bill_detail.state("withdrawn")
         bill.state("withdrawn")
-        self.create_tables()
         self.main_page()
         self.register()
         self.login()
@@ -57,25 +87,22 @@ class home:
         self.bill_detaill()
         self.show_bill()
 
+        self.check()
 
-        # self.check()
-
-        self.timeout = False
-        self.kalalst = []
-        self.kalaid = ""
-        self.valuelst = []
-        self.his_lst = []
-        self.count = 0
+        self.create_tables()
+        self.product_count = 0
         self.purchase_count = 0
+        self.import_count = 0
+        self.stock_count = 0
+        self.user_count = 0
         self.bill_count = 0
         self.departure_count = 0
-        self.stocklst = []
+        self.history_count = 0
+        self.kalalst = []
+        self.valuelst = []
         self.his_lst = []
-    
-
-
-        main.state("normal")
-        # history.state("normal")
+        self.stocklst = []
+        self.his_lst = []   
 
 #====================================================================================================================================================
 #====================================================================================================================================================
@@ -89,18 +116,19 @@ class home:
         ,type TEXT,groupp TEXT,stock INTEGER,photoo BLOB)''')
         self.cur.execute('''CREATE TABLE IF NOT EXISTS user (name TEXT ,last_name TEXT,code TEXT
         ,gender TEXT,work_Pposition TEXT,photoo BLOB)''')
-        self.cur.execute('''CREATE TABLE IF NOT EXISTS import (product_name TEXT ,user_name TEXT,groupp TEXT
-        ,type TEXT,stock INTEGER,date TEXT)''')
+        # self.cur.execute('''CREATE TABLE IF NOT EXISTS import (product_name TEXT ,user_name TEXT,groupp TEXT
+        # ,type TEXT,stock INTEGER,date TEXT)''')
         self.cur.execute('''CREATE TABLE IF NOT EXISTS history (order_code TEXT , product_name TEXT,product_code TEXT,groupp TEXT
         ,type TEXT,stock INTEGER,user_name TEXT,user_code TEXT,user_gender TEXT,number TEXT,date TEXT,situation TEXT)''')
         self.con.commit()
+
 #====================================================================================================================================================
 #====================================================================================================================================================
 #====================================================================================================================================================
 
     def register(self) :
         registration.state("withdraw")
-        registration.geometry('900x500+450+150')
+        registration.geometry('900x500+510+290')
         registration.title('ثبت نام')
         self.register_image = PhotoImage(file = 'img/register_back.png')
         self.register_img = Label(registration,image = self.register_image )
@@ -109,7 +137,7 @@ class home:
         self.name = Label(registration,text = ": نام",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
         self.last = Label(registration,text = ": نام خانوادگی",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
         self.user = Label(registration,text = ": نام کابری",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
-        self.passw = Label(registration,text = ": کلمه کاربری",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
+        self.passw = Label(registration,text = ": کلمه عبور",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
 
         self.name_ent = Entry(registration, bg = '#adb5bd', width = 25 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#FFFFFF')
         self.last_ent = Entry(registration, bg = '#adb5bd', width = 25 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#FFFFFF')
@@ -127,10 +155,8 @@ class home:
         self.passw_ent.place(x =500, y = 293 )
 
         self.submit_btn = Button(registration,bg = "#495057" , text = "ثبت",font = ('B Koodak' , 14),width=10 ,relief="flat" , fg = "#FFFFFF")
-        self.exit_btn = Button(registration,bg = "#495057" , text = "خروج",font = ('B Koodak' , 14),width=10 ,relief="flat" , fg = "#FFFFFF")
 
-        self.submit_btn.place(x = 544 ,y = 382)
-        self.exit_btn.place(x = 704 , y = 382)
+        self.submit_btn.place(x = 611 ,y = 362)
 
         self.submit_btn.bind('<Button-1>',self.register_check)
 
@@ -151,11 +177,10 @@ class home:
         self.passw.place(x = 310 , y = 209)
         
         self.user_entt = Entry(loginn, bg = '#ced4da', width = 23 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057')
-        self.passw_entt = Entry(loginn, bg = '#ced4da', width = 23 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057',show = "")
+        self.passw_entt = Entry(loginn, bg = '#ced4da', width = 23 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#495057',show = "*")
         self.user_entt.place(x = 80 , y = 151)
         self.passw_entt.place(x = 80 , y = 219)
 
-        # self.baz_image = PhotoImage(file = 'img/login_back.png')
         self.baste_image = PhotoImage(file = 'img/baste.png')
         self.eye = Button(loginn,image = self.baste_image ,relief="flat" , bg = "#495057",activebackground = '#495057')
         self.eye.place(x = 35 , y = 219)
@@ -208,21 +233,20 @@ class home:
             loginn.state('withdrawn')
             main.state('normal')
     def hide(self,event = None):
-        if self.passw_ent['show'] == '*' :
-            self.passw_ent['show'] = ""
+        if self.passw_entt['show'] == '*' :
+            self.passw_entt['show'] = ""
             self.baste_image['file'] = 'img/baz.png'
-        elif self.passw_ent['show'] == "" :
-            self.passw_ent['show'] = '*'
+        elif self.passw_entt['show'] == "" :
+            self.passw_entt['show'] = '*'
             self.baste_image['file'] = 'img/baste.png'
 
-        
 #====================================================================================================================================================
 #====================================================================================================================================================
 #====================================================================================================================================================
 
     def main_page(self) :
         main.state("withdraw")
-        main.geometry('1200x680+550+150')
+        main.geometry('1200x680+360+200')
         main.title('صفحه اصلی')
 
         self.main_image = PhotoImage(file = 'img/main_back.png')
@@ -306,6 +330,7 @@ class home:
         self.point_purchase_ent.delete(0,END)
         self.Description_ent.delete(0,END)
         self.search_ent.delete(0,END)
+
         self.procuct_img = Image.open("img/empty.png")
         self.procuct_image = self.procuct_img.resize((220, 176))
         self.product_photo = ImageTk.PhotoImage(self.procuct_image)
@@ -378,6 +403,7 @@ class home:
         self.departure_number_ent.delete(0,END)
         self.departure_code_ent.delete(0,END)
         self.departure_date_cal.delete(0,END)
+
         self.departure_empty_img = Image.open('img/import_empty.png')
         self.departure_empty_image = self.departure_empty_img.resize((170, 160))
         self.departure_empty = ImageTk.PhotoImage(self.departure_empty_image)
@@ -398,6 +424,12 @@ class home:
         bill_main.state("normal")
         for item in self.bill_detail_table.get_children():
             self.bill_detail_table.delete(item)
+    def bill_to_Dbill(self,event = None) :
+        bill.state("withdrawn")
+        bill_detail.state("normal")
+    def bill_to_main(self,evnt = None) :
+        bill.state("withdrawn")
+        main.state("normal")
 #====================================================================================================================================================
 #====================================================================================================================================================
 #====================================================================================================================================================
@@ -462,15 +494,7 @@ class home:
         self.Product_registration_edit.place(x=262, y=815)    
         self.Product_registration_delete.place(x=473, y=815)    
         self.Product_registration_exit.place(x=1120, y=815)    
-
-        self.procuct_img = Image.open("img/empty.png")
-        self.procuct_image = self.procuct_img.resize((220, 176))
-        self.new_width = 220
-        self.new_height = 175
-        self.product_photo = ImageTk.PhotoImage(self.procuct_image)
-        self.product_photo_label = Label(Product, image=self.product_photo, width=self.new_width, height=self.new_height)
-        self.product_photo_label.place(x=125, y=153)  
-        
+ 
         self.kala = ttk.Treeview(Product,show='headings',height=7)
         self.kala['columns']=('group','Type','point','id','Name','row')
         self.kala.column('#0',width=0,stretch=NO)
@@ -503,7 +527,6 @@ class home:
         self.search_btn.bind('<Button-1>',self.product_search)
         self.Product_registration_edit.bind('<Button-1>',self.edit)
         self.Product_registration_delete.bind('<Button-1>',self.product_delete)
-        # self.search_btn.bind('<Button-1>',self.search)
         self.Product_registration_exit.bind('<Button-1>',self.product_to_home)
     #edit part------------------------------------------------------------
     def show_info(self,event = None) :
@@ -552,6 +575,12 @@ class home:
         self.product_name_ent.delete(0,END)
         self.point_purchase_ent.delete(0,END)
         self.Description_ent.delete(0,END)
+
+        self.procuct_img = Image.open("img/empty.png")
+        self.procuct_image = self.procuct_img.resize((220, 176))
+        self.product_photo = ImageTk.PhotoImage(self.procuct_image)
+        self.product_photo_label = Label(Product, image=self.product_photo, width=self.new_width, height=self.new_height)
+        self.product_photo_label.place(x=125, y=153) 
     def product_sql_update(self,id1,code1,name1,point1,Description1,type1,group1):
         con = sql.connect('mydb.db')
         cur = con.cursor()
@@ -565,47 +594,65 @@ class home:
         return list(row)
     #delet part------------------------------------------------------------
     def product_delete(self, event = None) :
-        con = sql.connect('mydb.db')
-        cur = con.cursor()
+        self.product_q = messagebox.askquestion("Confirm","آیا مطمئن هستید؟")  
+        if self.product_q == "yes" :
+            con = sql.connect('mydb.db')
+            cur = con.cursor()
 
-        def sql_delete(name):
-            command = ' DELETE FROM kala WHERE id="{}" '.format(name)    
-            cur.execute(command)    
-            con.commit()
-        sql_delete(self.values[3])
-        self.deletee = self.kala.selection()[0]
-        self.kala.delete(self.deletee)        
+            def sql_delete(name):
+                command = ' DELETE FROM kala WHERE id="{}" '.format(name)    
+                cur.execute(command)    
+                con.commit()
+            sql_delete(self.values[3])
+            self.deletee = self.kala.selection()[0]
+            self.kala.delete(self.deletee)  
+
+            self.product_type_combo.set("یک گزینه را انتخاب کنید")
+            self.product_group_combo.set("یک گزینه را انتخاب کنید")
+            self.product_code_ent.delete(0,END)
+            self.product_name_ent.delete(0,END)
+            self.point_purchase_ent.delete(0,END)
+            self.Description_ent.delete(0,END)
+
+            self.procuct_img = Image.open("img/empty.png")
+            self.procuct_image = self.procuct_img.resize((220, 176))
+            self.product_photo = ImageTk.PhotoImage(self.procuct_image)
+            self.product_photo_label = Label(Product, image=self.product_photo, width=self.new_width, height=self.new_height)
+            self.product_photo_label.place(x=125, y=153)
+
     #search part------------------------------------------------------------
     def product_search(self,event = None):
         self.con=sql.connect('mydb.db')
         self.cur=self.con.cursor()
         self.idK=self.search_ent.get()
-        self.count=0
+        self.product_count=0
         if self.idK !='':
             for i in self.kala.get_children():
                 self.kala.delete(i)
             self.row=self.cur.execute('SELECT * FROM kala WHERE id="{}"'.format(self.idK))
             self.search_list=list(self.row)
-            self.kala.insert(parent='',index='end',iid=self.count,text='',
+            self.kala.insert(parent='',index='end',iid=self.product_count,text='',
             values=(self.search_list[0][5],self.search_list[0][4],self.search_list[0][2],
-            self.search_list[0][0],self.search_list[0][1],str(self.count+1)))
-        # # else:
-        #     self.lst=[]
-        #     self.kala.delete('0')
-        #     self.data_to_list()
+            self.search_list[0][0],self.search_list[0][1],str(self.product_count+1)))
+        
+        else:
+            for item in self.kala.get_children():
+                self.kala.delete(item)
+                print(item)
+            self.product_data_to_treeview()
     #treeview------------------------------------------------------------
     def product_data_to_treeview(self):
         self.kalalst = []
-        self.count=0
+        self.product_count = 0
         self.con=sql.connect('mydb.db')
         self.cur=self.con.cursor()
         row=self.cur.execute('SELECT * FROM kala')
         for i in row :
             self.kalalst.append(i)
         for i in self.kalalst:
-            self.kala.insert(parent='',index='end',iid=self.count,text='',
-            values=(i[5],i[4],i[2],i[0],i[1],str(self.count+1)))
-            self.count += 1
+            self.kala.insert(parent='',index='end',iid=self.product_count,text='',
+            values=(i[5],i[4],i[2],i[0],i[1],str(self.product_count+1)))
+            self.product_count += 1
     def Product_registration_info(self,event = None) :
         self.code = self.product_code_ent.get()
         self.name = self.product_name_ent.get()
@@ -636,7 +683,8 @@ class home:
         self.product_photo_label = Label(Product, image=self.product_photo, width=self.new_width, height=self.new_height)
         self.product_photo_label.place(x=125, y=153) 
 
-        self.kala.insert(parent = '',index = 'end',text = 'parent',values = (self.group,self.type,self.point,self.code,self.name,self.count+1))
+        self.kala.insert(parent = '',index = 'end',text = 'parent',values = (self.group,self.type,self.point,self.code,self.name,self.product_count+1))
+        self.product_count += 1
     def covert_to_binary_data(self,filename):
         with open (filename , 'rb') as f:
             blobdata = f.read()
@@ -653,13 +701,7 @@ class home:
         self.product_photo_label.place(x=125, y=153)   
 
         
-    # def binary_to_img(self,filename):
-    #     # image_data = img
-    #     with open(filename, "rb") as f:
-    #         img_data = f.read()
-    #         try:
-    #             img = Image.open(io.BytesIO(img_data))
-    #         except IOError:
+
 #====================================================================================================================================================
 #====================================================================================================================================================
 #====================================================================================================================================================
@@ -765,16 +807,16 @@ class home:
     #treeview------------------------------------------------------------
     def user_data_to_table(self):
         self.userlst = []
-        self.count=0
+        self.user_count=0
         self.con=sql.connect('mydb.db')
         self.cur=self.con.cursor()
         row=self.cur.execute('SELECT * FROM user')
         for i in row :
             self.userlst.append(i)
         for i in self.userlst:
-            self.user_table.insert(parent='',index='end',iid=self.count,text='',
-            values=(i[4],i[3],i[2],i[1],i[0],str(self.count+1)))
-            self.count += 1
+            self.user_table.insert(parent='',index='end',iid=self.user_count,text='',
+            values=(i[4],i[3],i[2],i[1],i[0],str(self.user_count+1)))
+            self.user_count += 1
     def User_registration_info(self,event = None) :
         self.UserN = self.UserName_ent.get()
         self.UserL = self.UserLast_ent.get()
@@ -805,7 +847,7 @@ class home:
         self.user_label = Label(User, image=self.user_photo, width=self.new_width, height=self.new_height)
         self.user_label.place(x = 197 , y = 148)
 
-        self.user_table.insert(parent = '',index = 'end',text = 'parent',values = (self.UserO,self.UserG,self.UserC,self.UserL,self.UserN,self.count+1))
+        self.user_table.insert(parent = '',index = 'end',text = 'parent',values = (self.UserO,self.UserG,self.UserC,self.UserL,self.UserN,self.user_count+1))
     def covert_to_binary_data(self,filename):
         with open (filename , 'rb') as f:
             blobdata = f.read()
@@ -851,6 +893,12 @@ class home:
         self.UserCode_ent.delete(0,END)
         self.UserGender_combo.set("یک گزینه را انتخاب کنید")
         self.UserWorkPosition_combo.set("یک گزینه را انتخاب کنید")
+        
+        self.user_img = Image.open('img/empty.png')
+        self.user_image = self.user_img.resize((220, 176))
+        self.user_photo = ImageTk.PhotoImage(self.user_image)
+        self.user_label = Label(User, image=self.user_photo, width=self.new_width, height=self.new_height)
+        self.user_label.place(x = 197 , y = 148)
     def user_sql_update(self,id1,name1,last1,code1,gender1,userworkposition1):
         con = sql.connect('mydb.db')
         cur = con.cursor()
@@ -867,31 +915,45 @@ class home:
         self.con=sql.connect('mydb.db')
         self.cur=self.con.cursor()
         self.userId=self.user_search_ent.get()
-        self.count=0
+        self.user_count=0
         if self.userId !='':
             for i in self.user_table.get_children():
                 self.user_table.delete(i)
             self.row=self.cur.execute('SELECT * FROM user WHERE code="{}"'.format(self.userId))
             self.search_list=list(self.row)
-            self.user_table.insert(parent='',index='end',iid=self.count,text='',
+            self.user_table.insert(parent='',index='end',iid=self.user_count,text='',
             values=(self.search_list[0][4],self.search_list[0][3],self.search_list[0][2],
-            self.search_list[0][1],self.search_list[0][0],str(self.count+1)))
-        # else:
-        #     self.lst=[]
-        #     self.user_table.delete('0')
-        #     self.user_data_to_table()
+            self.search_list[0][1],self.search_list[0][0],str(self.user_count+1)))
+        else:
+            for item in self.user_table.get_children():
+                self.user_table.delete(item)
+            self.user_data_to_table()
     #delet part------------------------------------------------------------
     def user_delete(self, event = None) :
-        con = sql.connect('mydb.db')
-        cur = con.cursor()
+        self.user_q = messagebox.askquestion("Confirm","آیا مطمئن هستید؟")  
+        if self.user_q == "yes" :
+            con = sql.connect('mydb.db')
+            cur = con.cursor()
 
-        def sql_delete(name):
-            command = ' DELETE FROM user WHERE code="{}" '.format(name)    
-            cur.execute(command)    
-            con.commit()
-        sql_delete(self.values[2])
-        self.deletee = self.user_table.selection()[0]
-        self.user_table.delete(self.deletee)    
+            def sql_delete(name):
+                command = ' DELETE FROM user WHERE code="{}" '.format(name)    
+                cur.execute(command)    
+                con.commit()
+            sql_delete(self.values[2])
+            self.deletee = self.user_table.selection()[0]
+            self.user_table.delete(self.deletee)   
+
+            self.UserName_ent.delete(0,END)
+            self.UserLast_ent.delete(0,END)
+            self.UserCode_ent.delete(0,END)
+            self.UserGender_combo.set("یک گزینه را انتخاب کنید")
+            self.UserWorkPosition_combo.set("یک گزینه را انتخاب کنید")
+            
+            self.user_img = Image.open('img/empty.png')
+            self.user_image = self.user_img.resize((220, 176))
+            self.user_photo = ImageTk.PhotoImage(self.user_image)
+            self.user_label = Label(User, image=self.user_photo, width=self.new_width, height=self.new_height)
+            self.user_label.place(x = 197 , y = 148) 
 #====================================================================================================================================================
 #====================================================================================================================================================
 #====================================================================================================================================================
@@ -949,29 +1011,29 @@ class home:
         self.stock_table.bind('<ButtonRelease-1>',self.stock_select)
     def data_to_stock(self) :
         self.stocklst = []
-        self.count=0
+        self.stock_count=0
         self.con=sql.connect('mydb.db')
         self.cur=self.con.cursor()
         row=self.cur.execute('SELECT * FROM kala')
         for i in row :
             self.stocklst.append(i)
         for i in self.stocklst:
-            self.stock_table.insert(parent='',index='end',iid=self.count,text='',
-            values=(i[6],i[4],i[5],i[0],i[1],str(self.count+1)))
-            self.count += 1
+            self.stock_table.insert(parent='',index='end',iid=self.stock_count,text='',
+            values=(i[6],i[4],i[5],i[0],i[1],str(self.stock_count+1)))
+            self.stock_count += 1
     def stock_search(self,event = None):
         self.con=sql.connect('mydb.db')
         self.cur=self.con.cursor()
         self.stockID=self.stock_search_ent.get()
-        self.count=0
+        self.stock_count=0
         if self.stockID !='':
             for i in self.stock_table.get_children():
                 self.stock_table.delete(i)
             self.row=self.cur.execute('SELECT * FROM kala WHERE id="{}"'.format(self.stockID))
             self.search_list=list(self.row)
-            self.stock_table.insert(parent='',index='end',iid=self.count,text='',
+            self.stock_table.insert(parent='',index='end',iid=self.stock_count,text='',
             values=(self.search_list[0][5],self.search_list[0][4],self.search_list[0][2],
-            self.search_list[0][0],self.search_list[0][1],str(self.count+1)))
+            self.search_list[0][0],self.search_list[0][1],str(self.stock_count+1)))
     def stock_select(self, event = None) :
         self.stock_selected = self.stock_table.focus()
         self.stock_values = self.stock_table.item(self.stock_selected , "values")
@@ -1134,7 +1196,7 @@ class home:
         self.import_date = self.date_cal.get()
         self.import_order = self.import_order_code_ent.get()
         # self.import_count = 0
-        self.import_table.insert(parent = '',index = 'end',text = 'parent',values = (self.import_date,self.import_number,self.pr_type['text'],self.pr_group['text'],self.us_name['text'],self.pr_name['text'],self.import_count+1))
+        self.import_table.insert(parent = '',index = 'end',text = 'parent',values = (self.import_date,self.import_number,self.pr_type['text'],self.pr_group['text'],self.us_name['text'],self.pr_name['text'],self.import_order,self.import_count+1))
         self.edit_stck = self.cur.execute('SELECT stock FROM kala WHERE id="{}"'.format(self.import_product_code))
         self.edit_stck = list(self.edit_stck)
         self.new_stock = int(self.edit_stck[0][0]) + int(self.import_number)
@@ -1160,6 +1222,12 @@ class home:
         self.number_ent.delete(0,END)
         self.date_cal.delete(0,END)
         self.import_order_code_ent.delete(0,END)
+
+        self.impo_empty_img = Image.open('img/import_empty.png')
+        self.impo_empty_image = self.impo_empty_img.resize((175, 124))
+        self.impo_empty = ImageTk.PhotoImage(self.impo_empty_image)
+        self.impo_empty_label = Label(importt, image=self.impo_empty)
+        self.impo_empty_label.place(x = 115 , y = 260)
     def data_to_import_table(self):
         self.import_lst = []
         self.import_count=0
@@ -1183,7 +1251,7 @@ class home:
 #====================================================================================================================================================
     def purchase_request(self) :
         purchase.state("withdrawn")
-        purchase.geometry("1200x800+250+50")
+        purchase.geometry("1200x800+360+140")
         purchase.title('درخواست کالا')
 
         self.purchase_image = PhotoImage(file = 'img/purchase_back.png')
@@ -1255,6 +1323,7 @@ class home:
         self.number_ent.insert(0,self.minimum_number)
         self.pr_code_ent.insert(0,self.purchase_values[4])
         self.import_prduct_fill()
+        self.data_to_import_table()
     def purchase_select(self, event = None) :
         self.purchase_selected = self.purchase_table.focus()
         self.purchase_values = self.purchase_table.item(self.purchase_selected , "values")
@@ -1413,6 +1482,7 @@ class home:
         self.departure_photo = ImageTk.PhotoImage(self.procuct_image)
         self.departure_photo_label = Label(departure , image=self.departure_photo)
         self.departure_photo_label.place(x = 367 , y = 239)
+        
     def departure_submit(self,event = None) :
         self.departure_number = self.departure_number_ent.get()
         self.departure_date = self.departure_date_cal.get()
@@ -1442,6 +1512,12 @@ class home:
         self.departure_number_ent.delete(0,END)
         self.departure_code_ent.delete(0,END)
         self.departure_date_cal.delete(0,END)
+
+        self.departure_empty_img = Image.open('img/import_empty.png')
+        self.departure_empty_image = self.departure_empty_img.resize((170, 160))
+        self.departure_empty = ImageTk.PhotoImage(self.departure_empty_image)
+        self.departure_empty_label = Label(departure, image=self.departure_empty)
+        self.departure_empty_label.place(x = 367 , y = 239)
     def data_to_departure_table(self):
         self.departure_lst = []
         self.departure_count=0
@@ -1484,7 +1560,16 @@ class home:
         self.departure_pr_code_ent.delete(0,END)
         self.departure_pr_code_ent.insert(0,self.departure_select_data[0][2])
         self.departure_us_code_ent.delete(0,END)
+        print(self.departure_pr_code_ent.get())
         self.departure_us_code_ent.insert(0,self.departure_select_data[0][7])
+        departure_imh_cmd = "SELECT photoo FROM kala WHERE id = '{}'".format(self.departure_pr_code_ent.get())
+        cur.execute(departure_imh_cmd)
+        self.image_data = cur.fetchone()[0]
+        self.procuct_img = Image.open(io.BytesIO(self.image_data))
+        self.procuct_image = self.procuct_img.resize((170, 160))
+        self.departure_photo = ImageTk.PhotoImage(self.procuct_image)
+        self.departure_photo_label = Label(departure , image=self.departure_photo)
+        self.departure_photo_label.place(x = 367 , y = 239)
     def change_situation(self, event = None) :
         con = sql.connect('mydb.db')
         cur = con.cursor()
@@ -1518,6 +1603,12 @@ class home:
         self.departure_number_ent.delete(0,END)
         self.departure_code_ent.delete(0,END)
         self.departure_date_cal.delete(0,END)
+
+        self.departure_empty_img = Image.open('img/import_empty.png')
+        self.departure_empty_image = self.departure_empty_img.resize((170, 160))
+        self.departure_empty = ImageTk.PhotoImage(self.departure_empty_image)
+        self.departure_empty_label = Label(departure, image=self.departure_empty)
+        self.departure_empty_label.place(x = 367 , y = 239)
     # def data_to_history_table(self) :
     #     if self.timeout == True :
     #         time.sleep(10)
@@ -1573,6 +1664,7 @@ class home:
         self.history_show_btn.bind('<Button-1>',self.history_show)
         self.history_home_btn.bind('<Button-1>',self.history_to_home)
     def history_table_by_Date(self) :
+        self.history_count = 0
         con = sql.connect('mydb.db')
         cur = con.cursor() 
 
@@ -1581,9 +1673,9 @@ class home:
         for i in row :
             self.his_lst.append(i)
         for i in self.his_lst:
-            self.history_table.insert(parent='',index='end',iid=self.count,text='',
-            values=(i[2],i[4],i[5],i[0],i[1],str(self.count+1)))
-            self.count += 1
+            self.history_table.insert(parent='',index='end',iid=self.history_count,text='',
+            values=(i[2],i[4],i[5],i[0],i[1],str(self.history_count+1)))
+            self.history_count += 1
         self.history_df = pd.read_sql_query("SELECT * FROM history",con)
         
     def history_select(self,event = None) :
@@ -1734,7 +1826,7 @@ class home:
         
         self.bill_detail_table.place(x = 75 , y = 155)
         
-        self.Dbill_home_img = PhotoImage(file = 'img/home_btn.png')
+        self.Dbill_home_img = PhotoImage(file = 'img/back_btn.png')
         self.Dbill_home_btn = Button(bill_detail,bg = "#FFFFFF" , image = self.Dbill_home_img,font = ('B Koodak' , 13),width=230 ,relief="flat" , fg = "#000000",activebackground="#FFFFFF")
         self.Dbill_home_btn.place(x = 919 , y = 724)
 
@@ -1761,7 +1853,7 @@ class home:
         self.bill_detail_values = self.bill_detail_table.item(self.bill_detail_selected , "values")
     def show_bill(self,event = None) :
         bill.state("withdrawn")
-        bill.geometry("1200x730+360+140") 
+        bill.geometry("1200x800+360+140") 
 
         self.bill_main_image = PhotoImage(file = 'img/billl_back.png')
         self.bill_main_img = Label(bill,image = self.bill_main_image ,relief="flat")
@@ -1779,12 +1871,12 @@ class home:
         self.bill_situation_lbl.place(x = 519, y = 170)
         self.bill_user_name_lbl.place(x = 519, y = 258)
         self.bill_user_code_lbl.place(x = 519, y = 346)
-        self.bill_date_lbl = Label(bill,text = ": تاریخ",font = ('B Koodak' , 15),bg = '#343A40',fg = '#DEE2E6')
-        self.bill_number_lbl = Label(bill,text = ": تعداد",font = ('B Koodak' , 15),bg = '#343A40',fg = '#DEE2E6')
-        self.bill_stock_lbl = Label(bill,text = ": موجودی",font = ('B Koodak' , 25),bg = '#343A40',fg = '#DEE2E6')
-        self.bill_date_lbl.place(x = 970, y = 488)
-        self.bill_number_lbl.place(x = 444, y = 488)
-        self.bill_stock_lbl.place(x = 749, y = 565)
+        self.bill_date_lbl = Label(bill,text = ": تاریخ",font = ('B Koodak' , 15),bg = '#DEE2E6',fg = '#495057')
+        self.bill_number_lbl = Label(bill,text = ": تعداد",font = ('B Koodak' , 15),bg = '#DEE2E6',fg = '#495057')
+        self.bill_stock_lbl = Label(bill,text = ": موجودی",font = ('B Koodak' , 25),bg = '#DEE2E6',fg = '#495057')
+        self.bill_date_lbl.place(x = 913, y = 530)
+        self.bill_number_lbl.place(x = 491, y = 530)
+        self.bill_stock_lbl.place(x = 657, y = 590)
 
         self.bill_order_code = Label(bill,font = ('B Koodak' , 20),bg = '#495057',fg = '#FFFFFF',width = 12)
         self.bill_product_code = Label(bill,font = ('B Koodak' , 20),bg = '#495057',fg = '#FFFFFF',width = 12)
@@ -1798,12 +1890,24 @@ class home:
         self.bill_situation.place(x = 245, y = 170)
         self.bill_user_name.place(x = 245, y = 258)
         self.bill_user_code.place(x = 245, y = 346)
-        self.bill_date = Label(bill,font = ('B Koodak' , 15),bg = '#343A40',fg = '#DEE2E6')
-        self.bill_number = Label(bill,font = ('B Koodak' , 15),bg = '#343A40',fg = '#DEE2E6')
-        self.bill_stock = Label(bill,font = ('B Koodak' , 25),bg = '#343A40',fg = '#DEE2E6')
-        self.bill_date.place(x = 800, y = 488)
-        self.bill_number.place(x = 350, y = 488)
-        self.bill_stock.place(x = 600, y = 565)
+        self.bill_date = Label(bill,font = ('B Koodak' , 15),bg = '#DEE2E6',fg = '#000000')
+        self.bill_number = Label(bill,font = ('B Koodak' , 15),bg = '#DEE2E6',fg = '#000000')
+        self.bill_stock = Label(bill,font = ('B Koodak' , 25),bg = '#DEE2E6',fg = '#000000')
+        self.bill_date.place(x = 773, y = 530)
+        self.bill_number.place(x = 400, y = 530)
+        self.bill_stock.place(x = 547, y = 590)
+
+        self.bill_back_img = PhotoImage(file = 'img/back_btn.png')
+        self.bill_back = Button(bill,bg = "#FFFFFF",activebackground= "#FFFFFF", image = self.bill_back_img,width=230 ,relief="flat") 
+        self.bill_home_img = PhotoImage(file = 'img/home_btn.png')
+        self.bill_exit = Button(bill,bg = "#FFFFFF" , image = self.bill_home_img,width=230 ,relief="flat") 
+
+        self.bill_back.place(x=50, y=715)    
+        self.bill_exit.place(x=920, y=715) 
+
+        self.bill_back.bind('<Button-1>',self.bill_to_Dbill)
+        self.bill_exit.bind('<Button-1>',self.bill_to_main)
+
     def fill_bill(self,event = None) :
         bill_detail.state("withdrawn")
         bill.state("normal")
@@ -1822,6 +1926,7 @@ class home:
         self.bill_date['text']='{: ^10}'.format(self.bill_select_data[0][10])
         self.bill_number['text']='{: ^10}'.format(self.bill_select_data[0][9])
         self.bill_stock['text']='{: ^10}'.format(self.bill_select_data[0][5])
+
 
 asd = home(main)
 main.mainloop()
