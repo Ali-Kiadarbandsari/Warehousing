@@ -14,36 +14,6 @@ from tkinter import messagebox
 from tkcalendar import Calendar, DateEntry
 import time
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg 
-class INTcheck:
-    def __set_name__(self,instance,key):
-        self.key = key
-    
-    def __get__(self,instance,owner):
-        return  instance.__dict__[self.key]
-    
-    def __set__(self,instance,value):
-        if value.isdigit():
-             instance.dict[self.key]=value
-        else:
-            messagebox.showerror("error","لطفا عدد وارد کنید")  
-            
-    def __delete__(self,instance):
-        del instance.__dict__[self.key]
-class STRcheck:
-    def __set_name__(self,instance,key):
-        self.key = key
-    
-    def __get__(self,instance,owner):
-        return  instance.__dict__[self.key]
-    
-    def __set__(self,instance,value):
-        if value.isdigit():
-             instance.dict[self.key]=value
-        else:
-            messagebox.showerror("error","لطفا حروف وارد کنید")  
-            
-    def __delete__(self,instance):
-        del instance.__dict__[self.key]
 main = Tk()
 registration = Toplevel()
 loginn = Toplevel()
@@ -57,8 +27,47 @@ history = Toplevel()
 bill_main = Toplevel()
 bill_detail = Toplevel()
 bill = Toplevel()
+class INTcheck:
+    def __set_name__(self,instance,key):
+        self.key = key
+    
+    def __get__(self,instance,owner):
+        return  instance.__dict__[self.key]
+    
+    def __set__(self,instance,value):
+        if value.isdigit():
+             instance.__dict__[self.key]=value
+        else:
+            messagebox.showerror("error","لطفا عدد وارد کنید")  
+            
+    def __delete__(self,instance):
+        del instance.__dict__[self.key]
+class STRcheck:
+    def __set_name__(self,instance,key):
+        self.key = key
+    
+    def __get__(self,instance,owner):
+        return  instance.__dict__[self.key]
+    
+    def __set__(self,instance,value):
+        if value.isalpha():
+             instance.__dict__[self.key]=value
+        else:
+            messagebox.showerror("error","لطفا حروف وارد کنید")  
+            
+    def __delete__(self,instance):
+        del instance.__dict__[self.key]
 class home:
+    name = STRcheck()
     code = INTcheck()
+    point = INTcheck()
+    desc = STRcheck()
+
+    UserN = STRcheck()
+    UserL = STRcheck()
+    UserC = INTcheck()
+
+    
     def __init__(self,event = None) :
         main.state("withdrawn")
         registration.state("withdrawn")
@@ -104,27 +113,28 @@ class home:
         self.stocklst = []
         self.his_lst = []   
 
-#====================================================================================================================================================
-#====================================================================================================================================================
-#====================================================================================================================================================
+
+
+
 
     def create_tables(self) :
         self.con = sql.connect('mydb.db')
         self.cur = self.con.cursor()
         self.cur.execute('''CREATE TABLE IF NOT EXISTS login (name TEXT ,last TEXT,username TEXT,password TEXT)''')
+        
         self.cur.execute('''CREATE TABLE IF NOT EXISTS kala (id   ,name TEXT ,point INTEGER,Description TEXT
         ,type TEXT,groupp TEXT,stock INTEGER,photoo BLOB)''')
+
         self.cur.execute('''CREATE TABLE IF NOT EXISTS user (name TEXT ,last_name TEXT,code TEXT
         ,gender TEXT,work_Pposition TEXT,photoo BLOB)''')
-        # self.cur.execute('''CREATE TABLE IF NOT EXISTS import (product_name TEXT ,user_name TEXT,groupp TEXT
-        # ,type TEXT,stock INTEGER,date TEXT)''')
+
         self.cur.execute('''CREATE TABLE IF NOT EXISTS history (order_code TEXT , product_name TEXT,product_code TEXT,groupp TEXT
         ,type TEXT,stock INTEGER,user_name TEXT,user_code TEXT,user_gender TEXT,number TEXT,date TEXT,situation TEXT)''')
         self.con.commit()
 
-#====================================================================================================================================================
-#====================================================================================================================================================
-#====================================================================================================================================================
+
+
+
 
     def register(self) :
         registration.state("withdraw")
@@ -134,8 +144,8 @@ class home:
         self.register_img = Label(registration,image = self.register_image )
         self.register_img.place(x = 0 , y = 0)
 
-        self.name = Label(registration,text = ": نام",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
-        self.last = Label(registration,text = ": نام خانوادگی",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
+        self.name_lbl = Label(registration,text = ": نام",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
+        self.last_lbl = Label(registration,text = ": نام خانوادگی",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
         self.user = Label(registration,text = ": نام کابری",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
         self.passw = Label(registration,text = ": کلمه عبور",font = ('B Koodak' , 18),bg = '#F8F9FA',fg = '#707070')
 
@@ -144,8 +154,8 @@ class home:
         self.user_ent = Entry(registration, bg = '#adb5bd', width = 25 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#FFFFFF')
         self.passw_ent = Entry(registration, bg = '#adb5bd', width = 25 , font = ('B Koodak' , 12) , relief = 'flat' , justify = 'right',fg='#FFFFFF')
 
-        self.name.place(x =750 , y = 90 )
-        self.last.place(x =750 , y = 155 )
+        self.name_lbl.place(x =750 , y = 90 )
+        self.last_lbl.place(x =750 , y = 155 )
         self.user.place(x =750 , y = 220 )
         self.passw.place(x =750 , y = 283 )
 
@@ -240,9 +250,10 @@ class home:
             self.passw_entt['show'] = '*'
             self.baste_image['file'] = 'img/baste.png'
 
-#====================================================================================================================================================
-#====================================================================================================================================================
-#====================================================================================================================================================
+
+
+
+
 
     def main_page(self) :
         main.state("withdraw")
@@ -281,9 +292,11 @@ class home:
         self.btn7.bind('<Button-1>',self.home_to_bill)
         self.btn8.bind('<Button-1>',self.home_to_history)
 
-#====================================================================================================================================================
-#====================================================================================================================================================
-#====================================================================================================================================================
+
+
+
+
+
     def home_to_product(self,event = None) :
         main.state("withdrawn")
         Product.state("normal")
@@ -316,7 +329,7 @@ class home:
         main.state("withdrawn")
         history.state("normal")
         self.history_table_by_Date()               
-#====================================================================================================================================================
+
     def product_to_home(self,evnt = None) :
         Product.state("withdrawn")
         main.state("normal")
@@ -430,9 +443,10 @@ class home:
     def bill_to_main(self,evnt = None) :
         bill.state("withdrawn")
         main.state("normal")
-#====================================================================================================================================================
-#====================================================================================================================================================
-#====================================================================================================================================================
+
+
+
+
     def Product_registration(self) :
         Product.state("withdraw")
         Product.geometry('1400x900+300+50')
@@ -521,14 +535,13 @@ class home:
 
         self.photo_submit.bind('<Button-1>',self.change_image)
         self.Product_registration_submit.bind('<Button-1>',self.Product_registration_info)
-        # self.Product_registration_submit.bind('<Button-1>',self.fill_stock_table)
         self.kala.bind('<Button-1>',self.show_info)
         self.kala.bind('<ButtonRelease-1>',self.show_info)
         self.search_btn.bind('<Button-1>',self.product_search)
         self.Product_registration_edit.bind('<Button-1>',self.edit)
         self.Product_registration_delete.bind('<Button-1>',self.product_delete)
         self.Product_registration_exit.bind('<Button-1>',self.product_to_home)
-    #edit part------------------------------------------------------------
+
     def show_info(self,event = None) :
         self.product_type_combo.set("یک گزینه را انتخاب کنید")
         self.product_group_combo.set("یک گزینه را انتخاب کنید")
@@ -592,7 +605,7 @@ class home:
         cur = con.cursor()
         row = cur.execute('SELECT * FROM kala WHERE id="{}"'.format(id1))    
         return list(row)
-    #delet part------------------------------------------------------------
+
     def product_delete(self, event = None) :
         self.product_q = messagebox.askquestion("Confirm","آیا مطمئن هستید؟")  
         if self.product_q == "yes" :
@@ -620,7 +633,7 @@ class home:
             self.product_photo_label = Label(Product, image=self.product_photo, width=self.new_width, height=self.new_height)
             self.product_photo_label.place(x=125, y=153)
 
-    #search part------------------------------------------------------------
+
     def product_search(self,event = None):
         self.con=sql.connect('mydb.db')
         self.cur=self.con.cursor()
@@ -640,7 +653,7 @@ class home:
                 self.kala.delete(item)
                 print(item)
             self.product_data_to_treeview()
-    #treeview------------------------------------------------------------
+
     def product_data_to_treeview(self):
         self.kalalst = []
         self.product_count = 0
@@ -689,7 +702,7 @@ class home:
         with open (filename , 'rb') as f:
             blobdata = f.read()
         return blobdata
-    #change image ------------------------------------------------------------
+
     def change_image(self,event = None) :
         self.filename = filedialog.askopenfilename()
         self.procuct_img = Image.open(self.filename)
@@ -702,9 +715,8 @@ class home:
 
         
 
-#====================================================================================================================================================
-#====================================================================================================================================================
-#====================================================================================================================================================
+
+
     def User_registration(self) :
         User.state("withdraw")
         User.geometry('1400x900+300+50')
@@ -794,7 +806,7 @@ class home:
         self.user_search_btn.bind('<Button-1>',self.user_search)
         self.User_registration_exit.bind('<Button-1>',self.user_to_home)
 
-    #change image ------------------------------------------------------------
+
     def user_change_image(self,event = None) :
         self.filename = filedialog.askopenfilename()
         self.user_img = Image.open(self.filename)
@@ -804,7 +816,7 @@ class home:
         self.user_photo = ImageTk.PhotoImage(self.user_image)
         self.user_label = Label(User, image=self.user_photo, width=self.new_width, height=self.new_height)
         self.user_label.place(x = 197 , y = 148)
-    #treeview------------------------------------------------------------
+
     def user_data_to_table(self):
         self.userlst = []
         self.user_count=0
@@ -852,7 +864,7 @@ class home:
         with open (filename , 'rb') as f:
             blobdata = f.read()
         return blobdata
-        #edit part------------------------------------------------------------
+
     def user_show_info(self,event = None) :
         self.UserName_ent.delete(0,END)
         self.UserLast_ent.delete(0,END)
@@ -910,7 +922,7 @@ class home:
         cur = con.cursor()
         row = cur.execute('SELECT * FROM user WHERE code="{}"'.format(id1))    
         return list(row)
-    #search part------------------------------------------------------------
+
     def user_search(self,event = None):
         self.con=sql.connect('mydb.db')
         self.cur=self.con.cursor()
@@ -928,7 +940,7 @@ class home:
             for item in self.user_table.get_children():
                 self.user_table.delete(item)
             self.user_data_to_table()
-    #delet part------------------------------------------------------------
+
     def user_delete(self, event = None) :
         self.user_q = messagebox.askquestion("Confirm","آیا مطمئن هستید؟")  
         if self.user_q == "yes" :
@@ -954,9 +966,11 @@ class home:
             self.user_photo = ImageTk.PhotoImage(self.user_image)
             self.user_label = Label(User, image=self.user_photo, width=self.new_width, height=self.new_height)
             self.user_label.place(x = 197 , y = 148) 
-#====================================================================================================================================================
-#====================================================================================================================================================
-#====================================================================================================================================================
+
+
+
+
+
     def warehouse_stock(self) :
         stock.state("withdrawn")
         stock.geometry("1200x700+350+200")
@@ -1048,13 +1062,11 @@ class home:
         sql_delete(self.stock_values[3])
         self.deletee = self.stock_table.selection()[0]
         self.stock_table.delete(self.deletee) 
-        # # else:
-        #     self.lst=[]
-        #     self.kala.delete('0')
-        #     self.data_to_list()
-#====================================================================================================================================================
-#====================================================================================================================================================
-#====================================================================================================================================================
+
+
+
+
+
     def import_product(self):
         importt.state("withdrawn")
         importt.geometry("1400x900+250+50")
@@ -1195,15 +1207,11 @@ class home:
         self.import_number = self.number_ent.get()
         self.import_date = self.date_cal.get()
         self.import_order = self.import_order_code_ent.get()
-        # self.import_count = 0
         self.import_table.insert(parent = '',index = 'end',text = 'parent',values = (self.import_date,self.import_number,self.pr_type['text'],self.pr_group['text'],self.us_name['text'],self.pr_name['text'],self.import_order,self.import_count+1))
         self.edit_stck = self.cur.execute('SELECT stock FROM kala WHERE id="{}"'.format(self.import_product_code))
         self.edit_stck = list(self.edit_stck)
         self.new_stock = int(self.edit_stck[0][0]) + int(self.import_number)
         command = ' UPDATE kala SET stock = {} WHERE id="{}" '.format(self.new_stock,self.import_product_code)    
-
-        # self.import_stock_data = self.cur.execute('SELECT * FROM kala WHERE id="{}"'.format(self.import_product_code))
-        # self.import_stock_data = list(self.import_stock_data)
                                         
         self.import_history_data=(self.import_order ,self.pr_name['text'],self.import_product_code,self.pr_group['text'],self.pr_type['text'],self.new_stock,self.us_name['text'],self.import_user_code,self.us_gender['text'],self.import_number,self.import_date,"کالا وارد شد")
         self.cur.execute('''CREATE TABLE IF NOT EXISTS history (order_code TEXT , product_name TEXT,product_code TEXT,groupp TEXT
@@ -1241,14 +1249,12 @@ class home:
             self.import_table.insert(parent='',index='end',iid=self.import_count,text='',
             values=(i[10],i[9],i[4],i[3],i[6],i[1],i[0],str(self.import_count+1)))
             self.import_count += 1
-        # self.UserName_ent.delete(0,END)
-        # self.UserLast_ent.delete(0,END)
-        # self.UserCode_ent.delete(0,END)
-        # self.UserGender_combo.set("یک گزینه را انتخاب کنید")
-        # self.UserWorkPosition_combo.set("یک گزینه را انتخاب کنید")
-#====================================================================================================================================================
-#====================================================================================================================================================
-#====================================================================================================================================================
+
+
+
+
+
+
     def purchase_request(self) :
         purchase.state("withdrawn")
         purchase.geometry("1200x800+360+140")
@@ -1327,9 +1333,11 @@ class home:
     def purchase_select(self, event = None) :
         self.purchase_selected = self.purchase_table.focus()
         self.purchase_values = self.purchase_table.item(self.purchase_selected , "values")
-#====================================================================================================================================================
-#====================================================================================================================================================
-#====================================================================================================================================================
+
+
+
+
+
     def departure_product(self) :
         departure.state("withdrawn")
         departure.geometry("1500x900+250+50")
@@ -1339,10 +1347,6 @@ class home:
         self.departure_image = PhotoImage(file = 'img/departure_back.png')
         self.departure_img = Label(departure,image = self.departure_image ,relief="flat")
         self.departure_img.place(x = 0 , y = 0)
-
-        # self.import_home_img = PhotoImage(file = 'img/import_home_btn.png')
-        # self.import_home_btn = Button(importt,bg = "#495057" , image = self.import_home_img,font = ('B Koodak' , 13),width=189 ,relief="flat" , fg = "#000000",activebackground="#495057")
-        # self.import_home_btn.place(x = 75 , y = 43)
 
         self.check_img = PhotoImage(file = 'img/check_btn.png')
         self.departure_us_code_ent = Entry(departure, bg = '#FFFFFF', width = 25 , font = ('B Koodak' , 14) , relief = 'flat' , justify = 'right',fg='#495057')
@@ -1524,8 +1528,7 @@ class home:
         self.con=sql.connect('mydb.db')
         self.cur=self.con.cursor()
         self.data_departuret_command = "SELECT * FROM history WHERE situation = 'در حال بررسی' OR situation = 'آماده تحویل' OR situation = 'تحویل داده شده'"
-        # self.data_departuret_command = "SELECT * FROM history WHERE situation = '{}'".format("تحویل داده شد")
-        # self.data_departuret_command = "SELECT * FROM history WHERE situation = '{}'".format("کالا وارد شد")
+
         self.row=self.cur.execute(self.data_departuret_command)
 
         for i in self.row :
@@ -1587,7 +1590,6 @@ class home:
             cur.execute(' UPDATE kala SET stock = {} WHERE id="{}" '.format(self.departure_new_stock,self.departure_situation_data[0][2]))  
             cur.execute(' UPDATE history SET stock = {} WHERE order_code="{}" '.format(self.departure_new_stock,self.departure_situation_data[0][0]))  
         command_upadate_situation = ' UPDATE history SET situation = "{}"  WHERE order_code="{}" '.format(self.departure_situation,self.departure_values[7])    
-        # self.data_to_history_table()
         cur.execute(command_upadate_situation)    
         con.commit()
         self.departure_table.item(self.departure_selected ,values = (self.departure_situation,self.departure_values[1],self.departure_values[2],self.departure_values[3],self.departure_values[4],self.departure_values[5],self.departure_values[6],self.departure_values[7],self.departure_values[8])) 
@@ -1609,13 +1611,11 @@ class home:
         self.departure_empty = ImageTk.PhotoImage(self.departure_empty_image)
         self.departure_empty_label = Label(departure, image=self.departure_empty)
         self.departure_empty_label.place(x = 367 , y = 239)
-    # def data_to_history_table(self) :
-    #     if self.timeout == True :
-    #         time.sleep(10)
-    #         print("Asdasd")
-#====================================================================================================================================================
-#====================================================================================================================================================
-#====================================================================================================================================================
+
+
+
+
+
     def order_history(self) :
         history.state("withdraw")
         history.geometry("1200x800+360+100")
@@ -1637,7 +1637,7 @@ class home:
         self.history_table.column('row',width=175,anchor=E)
         self.history_table.heading('#0',text='',anchor=E)
         self.history_table.heading('point',text='نقطه خرید',anchor=E)
-        # self.history_table.heading('number',text='تعداد',anchor=E)
+
         self.history_table.heading('type',text='نوع کالا',anchor=E)
         self.history_table.heading('group',text='گروه کالا',anchor=E)
         self.history_table.heading('code',text='کد کالا',anchor=E)
@@ -1700,25 +1700,20 @@ class home:
             markeredgecolor = 'brown',
             markeredgewidth = 1   
         )
-        # plt.title("تتاریخچه سفارشات" , fontsize = 16 , color = 'black',loc = 'left')# right - center
-        # plt.xlabel('تاریخ' , fontsize = 12 , loc = 'center' ,color = 'black')
-        # plt.ylabel('موجودی' , fontsize = 12 , loc = 'center' ,color = 'black')
-
-        # plt.xticks(self.x,['a','b','c','d','e','f'] , color = 'black' , fontsize = 12)
-
 
         plt.grid(which = 'both' ,color = 'grey' ,linestyle = '-.' ,linewidth = 0.5)
 
         plt.show()
 
-
         self.frm  = LabelFrame(self , text = 'Plot' , padx = 5 , pady = 10)
         self.frm.place(x = 50 , y = 0)
         bar = FigureCanvasTkAgg(fig,self.frm)
         bar.get_tk_widget().pack(side = LEFT , fill = BOTH)
-#====================================================================================================================================================
-#====================================================================================================================================================
-#====================================================================================================================================================
+
+
+
+
+
     def billing(self) :
         bill_main.state("withdrawn")
         bill_main.geometry("1200x800+360+100")
@@ -1731,7 +1726,6 @@ class home:
         self.bill_table['columns']=('point','type','group','code','name','row')
         self.bill_table.column('#0',width=0,stretch=NO)
         self.bill_table.column('point',width=175,anchor=E)
-        # self.bill_table.column('number',width=150,anchor=E)
         self.bill_table.column('type',width=175,anchor=E)
         self.bill_table.column('group',width=175,anchor=E)
         self.bill_table.column('code',width=175,anchor=E)
@@ -1739,7 +1733,6 @@ class home:
         self.bill_table.column('row',width=175,anchor=E)
         self.bill_table.heading('#0',text='',anchor=E)
         self.bill_table.heading('point',text='نقطه خرید',anchor=E)
-        # self.bill_table.heading('number',text='تعداد',anchor=E)
         self.bill_table.heading('type',text='نوع کالا',anchor=E)
         self.bill_table.heading('group',text='گروه کالا',anchor=E)
         self.bill_table.heading('code',text='کد کالا',anchor=E)
@@ -1778,12 +1771,10 @@ class home:
             self.bill_table.insert(parent='',index='end',iid=self.bill_count,text='',
             values=(i[2],i[4],i[5],i[0],i[1],str(self.bill_count+1)))
             self.bill_count += 1
-        # self.bill_df = pd.read_sql_query("SELECT * FROM history ORDER BY date DESC",con)
     def bill_main_select(self,event = None) :
         self.bill_selected = self.bill_table.focus()
         self.bill_values = self.bill_table.item(self.bill_selected , "values")
-        # self.bill_detail_df = self.bill_df[(self.bill_df['product_code'] == self.bill_values[3])]
-        # print(self.bill_detail_df)
+
     def Mbill_to_Dbill(self,event = None) :
         bill_detail.state("normal")
         bill_main.state("withdrawn")
@@ -1928,6 +1919,6 @@ class home:
         self.bill_stock['text']='{: ^10}'.format(self.bill_select_data[0][5])
 
 
-asd = home(main)
+program = home(main)
 main.mainloop()
 
